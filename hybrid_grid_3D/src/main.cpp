@@ -37,10 +37,10 @@ int main()
 	fout << "variables = x, y, z" << endl;
 	for (int i=0; i < poly.size(); i++)
 		fout << poly[i].x << "  " << poly[i].y << "  " << poly[i].z << endl;
-	system("PAUSE");
-	/*
 	getType();
 	partition_Point();
+	system("PAUSE")
+		/*
 	sortPoint();
 	polymesh();
 	out_M("mesh/step = " + to_string(step));

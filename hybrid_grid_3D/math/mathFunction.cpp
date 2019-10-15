@@ -263,7 +263,7 @@ void polygonPoint(vector <Coordinate>& poly)
 {
 	Coordinate c1, c2, c3, c4, c0;
 	Coordinate v1, v2, v3;
-	double S = 400;
+	double S = 4000;
 	if (poly.size() != 0)
 		poly.clear();
 	//Blunt body problem
@@ -325,16 +325,14 @@ void polygonPoint(vector <Coordinate>& poly)
 	{
 		double beta = 0;
 		double theta = 0;
-		srand(time(0));
-		int i = 0;
-		while (i < S)
+		while (poly.size() < S)
 		{
-			beta = rand() % RAND_MAX * 2 * pi;
-			theta = rand() % RAND_MAX * pi;
-			c0.x = r * sin(theta) * cos(beta);
-			c0.y = r * sin(theta) * sin(beta);
-			c0.z = r * cos(theta);
-			poly.push_back(c0);
+			beta = rand() /double(RAND_MAX) * 2 * pi;
+			theta = rand() / double(RAND_MAX) * pi;
+			c0.x = r * sin(theta) * cos(beta)+a;
+			c0.y = r * sin(theta) * sin(beta)+b;
+			c0.z = r * cos(theta)+c;
+			poly.push_back(c0);			
 		}
 
 		//}
