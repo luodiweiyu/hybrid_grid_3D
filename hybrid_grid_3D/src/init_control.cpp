@@ -14,7 +14,8 @@ void control()
 	cout << "控制文件开始读取:" << endl;
 	ifstream fin("IO_files/control.txt");
 	string temp;
-	fin >> temp, fin >> cfl;
+	getline(fin, temp);
+	/*fin >> temp,*/ fin >> cfl;
 	fin >> temp, fin >> t_end;
 	fin >> temp, fin >> gama;
 	fin >> temp, fin >> flowType;

@@ -30,11 +30,15 @@ double res;
 extern double t_end;
 int main()
 {
-	//init_mesh1();
 	control();
 	init_mesh();
 	polygonPoint(poly);
-	//init_polygon_mesh();
+	ofstream fout("poly.dat");
+	fout << "variables = x, y, z" << endl;
+	for (int i=0; i < poly.size(); i++)
+		fout << poly[i].x << "  " << poly[i].y << "  " << poly[i].z << endl;
+	system("PAUSE");
+	/*
 	getType();
 	partition_Point();
 	sortPoint();
@@ -73,5 +77,5 @@ int main()
 	}
 	out_M("mesh/step = " + to_string(step));
 	system("PAUSE");
-	
+	*/
 }

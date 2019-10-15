@@ -10,6 +10,7 @@ const double random = 0.495;
 const double r = 0.175;
 const double a = 1 + r;
 const double b = 1.5;
+const double c = b;
 extern double dx, dy, dz;
 const int method[12][4] = {
 {1,2,0,0},//·½·¨3

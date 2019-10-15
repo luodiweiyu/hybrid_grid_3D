@@ -261,7 +261,7 @@ bool judgeFieldInOut(double x, double y)
 }
 void polygonPoint(vector <Coordinate>& poly)
 {
-	Coordinate c1, c2, c3, c4, c;
+	Coordinate c1, c2, c3, c4, c0;
 	Coordinate v1, v2, v3;
 	double S = 400;
 	if (poly.size() != 0)
@@ -331,18 +331,15 @@ void polygonPoint(vector <Coordinate>& poly)
 		{
 			beta = rand() % RAND_MAX * 2 * pi;
 			theta = rand() % RAND_MAX * pi;
-			c.x=
-		}
-		while (beta < 2 * pi)
-		{
-			beta += pi / 400;
-			c.x = (r + 0.5 * dx) * cos(beta) + a;
-			c.y = (r + 0.5 * dx) * sin(beta) + b;
-			poly.push_back(c);
+			c0.x = r * sin(theta) * cos(beta);
+			c0.y = r * sin(theta) * sin(beta);
+			c0.z = r * cos(theta);
+			poly.push_back(c0);
 		}
 
 		//}
 	}
+}
 	Coordinate getCrossPoint(double theta, double a, double b, double r)
 	{
 		Coordinate M;
