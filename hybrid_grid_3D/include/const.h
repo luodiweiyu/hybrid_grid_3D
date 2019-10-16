@@ -12,6 +12,7 @@ const double a = 1 + r;
 const double b = 1.5;
 const double c = b;
 extern double dx, dy, dz;
+extern string flowType;
 const int method[12][4] = {
 {1,2,0,0},//·½·¨3
 {0,1,2,2},

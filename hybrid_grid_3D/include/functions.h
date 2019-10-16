@@ -9,6 +9,8 @@ void get_dt();
 //
 //Flux HLLC_Υ(mesh& CD, mesh& CU, mesh& C, int method);
 //Flux HLLC_Υ2(mesh& CD, mesh& CU, mesh& C, int method);
+void coordinate_trans();
+
 template<class T>
 Flux VanLeerA(T& C, double xix, double xiy, double xit, double J);
 template<class T>
@@ -40,8 +42,8 @@ Coordinate getCrossPoint(T M, double a, double b, double r);//某点和圆心的连线与
 template <class T>
 Line getLine(T A, T B);
 Line getLine(double x1, double y1, double x2, double y2);
-template <class T>
-bool judgeFieldInOut(T& A, vector<Coordinate>& Poly);
+//template <class T>
+bool judgeFieldInOut(Mesh& A, vector<Coordinate>& poly);
 //bool judgeFieldInOut(double x, double y, vector <mesh> &poly);
 bool judgeFieldInOut(double x, double y);
 template <class T>

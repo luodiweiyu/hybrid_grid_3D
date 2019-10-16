@@ -7,8 +7,8 @@
 using std::vector;
 //void get_dt()
 //{
-//	extern vector<Mesh_S>ms;
-//	extern vector<Mesh_U>mu;
+//	extern vector<Mesh>ms;
+//	extern vector<Mesh>mu;
 //	double maxxi = 0, maxeta = 0;
 //	extern double dt, t_sim;
 //	double t;
@@ -81,65 +81,37 @@ using std::vector;
 //}
 double compute_res()//计算残差
 {
-	extern vector <Mesh_S> msr;
-	extern vector <Mesh_U> mur;
-	extern vector <Mesh_S> ms;
-	extern vector <Mesh_U> mu;
+	extern vector <Mesh> ap;
+	extern vector <Mesh> apr;
 	extern double dt;
 	int i, j;
 	double res = 0;
 	int n = 0;
-	for (i = 0; i < ms.size(); i++)
+	for (i = 0; i < ap.size(); i++)
 	{
-		res = max(res, abs(ms[i].rho - msr[ms[i].id].rho) / msr[ms[i].id].rho);
-		n++;
-	}
-	for (i = 0; i < mu.size(); i++)
-	{
-		res = max(res, abs(mu[i].rho - mur[mu[i].id].rho) / mur[mu[i].id].rho);
+		res = max(res, abs(ap[i].rho - apr[ap[i].id].rho) / apr[ap[i].id].rho);
 		n++;
 	}
 	return res / n;
 }
 void record()
 {
-	extern vector <Mesh_S> ms;
-	extern vector <Mesh_S> msr;
-	extern vector <Mesh_U> mu;
-	extern vector <Mesh_U> mur;
+	extern vector <Mesh> ap;
+	extern vector <Mesh> apr;
 	extern double t_sim;
 	int i, j;
 	if (t_sim == 0)
-
-		for (i = 0; i < ms.size(); i++)
-		{
-			msr.push_back(ms[i]);
-		}
+		for (i = 0; i < ap.size(); i++)
+			apr.push_back(ap[i]);
 	else
-
-		for (i = 0; i < ms.size(); i++)
-		{
-			msr[i] = ms[i];
-		}
-	if (t_sim == 0)
-
-		for (i = 0; i < mu.size(); i++)
-		{
-			mur.push_back(mu[i]);
-		}
-	else
-
-		for (i = 0; i < mu.size(); i++)
-		{
-			mur[i] = mu[i];
-		}
-
+		for (i = 0; i < ap.size(); i++)
+			apr[i] = ap[i];
 }
 
-//void update_p3(Mesh_U& p)
+//void update_p3(Mesh& p)
 ////unstructral grid point,3 neighbor points
 //{
-//	extern vector <Mesh_U> mur;
+//	extern vector <Mesh> mur;
 //	extern double dt;
 //	int i, j;
 //	int n1, n2, n3, n4;
@@ -194,11 +166,11 @@ void record()
 //	p.u.y = U[2] / U[0];
 //	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u.x * p.u.x + p.u.y * p.u.y));
 //}
-//void update_p4_s(Mesh_S& p)
+//void update_p4_s(Mesh& p)
 ////structral grid point,4 neighbor points
 ////事实上不应该坐标变换
 //{
-//	extern vector <Mesh_S> msr;
+//	extern vector <Mesh> msr;
 //	extern double dt;
 //	int i, j;
 //	int n1, n2, n3, n4;
@@ -243,10 +215,10 @@ void record()
 //	p.v = U[2] / U[0];
 //	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v));
 //}
-//void update_p4_u(Mesh_U& p)
+//void update_p4_u(Mesh& p)
 ////unstructral grid point,4 neighbor points
 //{
-//	extern vector <Mesh_U> mur;
+//	extern vector <Mesh> mur;
 //	extern double dt;
 //	int i, j;
 //	int n1, n2, n3, n4;
@@ -291,9 +263,7 @@ void record()
 //}
 void update_bound()
 {
-	extern vector <Mesh_U*>bound;
-	extern vector<Mesh_S>ms;
-	extern vector<Mesh_U>mu;
+	extern vector <Mesh*>bound;
 	extern double gama;
 	int i;
 	int id;
@@ -368,52 +338,33 @@ void update_bound()
 }
 
 
-//void sortPoint()
-////put mesh point into different arrays
-//{
-//	extern vector<mesh*> ps;//结构网格节点
-//	extern vector<mesh*> pu;//非结构网格节点
-//	extern vector<mesh*> bl;//左边界
-//	extern vector<mesh*> br;//右边界
-//	extern vector<mesh*> bu;//上边界
-//	extern vector<mesh*> bd;//下边界
-//	extern vector<mesh*> bb;//物体边界
-//	extern vector <mesh> AP;
-//	int n;
-//	for (int i = 0; i < AP.size(); i++)
-//	{
-//		if (AP[i].type == "IN")
-//		{
-//			n = 0;
-//			for (int j = 0; j < AP[i].neibor.size(); j++)
-//				if (AP[i].neibor[j]->type == "Body")
-//					n++;
-//			if (n == 0 && AP[i].neibor.size() == 4)
-//				ps.push_back(&AP[i]);
-//			else
-//				pu.push_back(&AP[i]);
-//		}
-//		//if (AP[i].neibor.size() == 4 )
-//		//	for
-//		//	ps.push_back(&AP[i]);
-//		//else if (AP[i].neibor.size() == 3 || AP[i].neibor.size() == 4)
-//		//	pu.push_back(&AP[i]);
-//		//else
-//		//	std::cout << "not a ps or pu inner point" << std::endl;
-//		else if (AP[i].type == "L")
-//			bl.push_back(&AP[i]);
-//		else if (AP[i].type == "R")
-//			br.push_back(&AP[i]);
-//		else if (AP[i].type == "U")
-//			bu.push_back(&AP[i]);
-//		else if (AP[i].type == "D")
-//			bd.push_back(&AP[i]);
-//		else if (AP[i].type == "Body")
-//			bb.push_back(&AP[i]);
-//		else
-//			std::cout << "need to confirm the point's type of ID" << AP[i].id << std::endl;
-//	}
-//}
+void sortPoint()
+//put mesh point into different arrays
+{
+	extern vector<Mesh> ap;
+	extern vector<Mesh*> ms;
+	extern vector<Mesh*> mu;
+	extern vector<Mesh*> bound;
+
+	int n;
+	for (int i = 0; i < ap.size(); i++)
+	{
+		if (ap[i].type == "IN")
+		{
+			n = 0;
+			for (int j = 0; j < ap[i].neibor.size(); j++)
+				if (ap[i].neibor[j]->type == "Body")
+					n++;
+			if (n == 0)
+				ms.push_back(&ap[i]);
+			else
+				mu.push_back(&ap[i]);
+		}
+		else
+			bound.push_back(&ap[i]);
+	}
+}
+
 //void polymesh()
 ////get polygon mesh from grid points
 //{

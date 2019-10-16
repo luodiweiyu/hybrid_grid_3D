@@ -126,11 +126,19 @@ Line getLine(double theta, T A)
 	return L;
 }
 
-template <class T>
-bool judgeFieldInOut(T& A, vector <Coordinate>& poly)
+//template <class T>
+bool judgeFieldInOut(Mesh& A, vector <Coordinate>& poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
+	//just for debug,the region is a sphere
+	double judge = (A.x - a) * (A.x - a) + (A.y - b) * (A.y - b) + (A.z - c) * (A.z - c);
+	if (judge < r * r)
+		return 1;
+	else
+		return 0;
+	//just for debug,the region is a sphere
+
 	float maxX, maxY, minX, minY;
 	maxX = minX = poly[0].x;
 	maxY = minY = poly[0].y;
@@ -174,7 +182,7 @@ bool judgeFieldInOut(T& A, vector <Coordinate>& poly)
 			d2 = distance(A, poly[near_id]);
 			d3 = distance(A, poly[near_id + 1]);
 		}
-		if (d2 < 0.5 * MeshPara::dx/*d1 / d2 > 2 || d2 / d1 > 2 || d2 / d3 > 2 || d3 / d2 > 2*/)
+		if (d2 < 0.5 * dx/*d1 / d2 > 2 || d2 / d1 > 2 || d2 / d3 > 2 || d3 / d2 > 2*/)
 			c = 1;
 	}
 	return c;
@@ -327,124 +335,124 @@ void polygonPoint(vector <Coordinate>& poly)
 		double theta = 0;
 		while (poly.size() < S)
 		{
-			beta = rand() /double(RAND_MAX) * 2 * pi;
+			beta = rand() / double(RAND_MAX) * 2 * pi;
 			theta = rand() / double(RAND_MAX) * pi;
-			c0.x = r * sin(theta) * cos(beta)+a;
-			c0.y = r * sin(theta) * sin(beta)+b;
-			c0.z = r * cos(theta)+c;
-			poly.push_back(c0);			
+			c0.x = r * sin(theta) * cos(beta) + a;
+			c0.y = r * sin(theta) * sin(beta) + b;
+			c0.z = r * cos(theta) + c;
+			poly.push_back(c0);
 		}
 
 		//}
 	}
 }
-	Coordinate getCrossPoint(double theta, double a, double b, double r)
+Coordinate getCrossPoint(double theta, double a, double b, double r)
+{
+	Coordinate M;
+	if (theta == pi / 2)
 	{
-		Coordinate M;
-		if (theta == pi / 2)
-		{
-			M.x = a;
-			M.y = b + r;
-		}
-		else if (theta == 3 * pi / 2)
-		{
-			M.x = a;
-			M.y = b - r;
-		}
+		M.x = a;
+		M.y = b + r;
+	}
+	else if (theta == 3 * pi / 2)
+	{
+		M.x = a;
+		M.y = b - r;
+	}
+	else
+	{
+		M.x = r * cos(theta) + a;
+		M.y = r * sin(theta) + b;
+	}
+	return M;
+}
+Coordinate getCrossPoint(Line L1, Line L2)
+{
+	Coordinate L;
+	L.x = (L2.B * L1.C - L1.B * L2.C) / (L2.A * L1.B - L1.A * L2.B);
+	L.y = (L2.A * L1.C - L1.A * L2.C) / (L1.A * L2.B - L2.A * L1.B);
+	return L;
+}
+template<class T>
+Coordinate getCrossPoint(T M, double a, double b, double r)//某点和圆心的连线与圆的交点
+{
+	Coordinate P;
+	Line L = getLine(M.x, M.y, a, b);
+	if (L.A == 0)
+	{
+		if (M.x < a)
+			P.x = a - r, P.y = b;
 		else
-		{
-			M.x = r * cos(theta) + a;
-			M.y = r * sin(theta) + b;
-		}
-		return M;
+			P.x = a + r, P.y = b;
 	}
-	Coordinate getCrossPoint(Line L1, Line L2)
+	else if (L.B == 0)
 	{
-		Coordinate L;
-		L.x = (L2.B * L1.C - L1.B * L2.C) / (L2.A * L1.B - L1.A * L2.B);
-		L.y = (L2.A * L1.C - L1.A * L2.C) / (L1.A * L2.B - L2.A * L1.B);
-		return L;
-	}
-	template<class T>
-	Coordinate getCrossPoint(T M, double a, double b, double r)//某点和圆心的连线与圆的交点
-	{
-		Coordinate P;
-		Line L = getLine(M.x, M.y, a, b);
-		if (L.A == 0)
-		{
-			if (M.x < a)
-				P.x = a - r, P.y = b;
-			else
-				P.x = a + r, P.y = b;
-		}
-		else if (L.B == 0)
-		{
-			if (M.y < b)
-				P.x = a, P.y = b - r;
-			else
-				P.x = a, P.y = b + r;
-		}
+		if (M.y < b)
+			P.x = a, P.y = b - r;
 		else
-		{
-			double diff = 1e-15;
-			double x0 = min(M.x, a);
-			double x1 = max(M.x, a);
-			double y0, y1;
-			double x2, y2;
-			double f0, f1, f2;
-			while (abs(x0 - x1) > diff)
-			{
-				y0 = -(L.A * x0 + L.C) / L.B;
-				y1 = -(L.A * x1 + L.C) / L.B;
-				x2 = (x0 + x1) / 2;
-				y2 = -(L.A * x2 + L.C) / L.B;
-				f0 = (x0 - a) * (x0 - a) + (y0 - b) * (y0 - b) - r * r;
-				f1 = (x1 - a) * (x1 - a) + (y1 - b) * (y1 - b) - r * r;
-				f2 = (x2 - a) * (x2 - a) + (y2 - b) * (y2 - b) - r * r;
-				if (f0 * f2 >= 0)
-					x0 = x2;
-				else
-					x1 = x2;
-			}
-			P.x = (x0 + x1) / 2;
-			P.y = (y0 + y1) / 2;
-		}
-		return P;
+			P.x = a, P.y = b + r;
 	}
-	template<class T>
-	double get_beta(T A, T B)//求出两个网格点与x轴的夹角
+	else
 	{
-		double dy = abs(A.y - B.y);
-		double dx = abs(A.x - B.x);
-		double beta = atan(dy / dx);
-		return beta;
-	}
-	template<class T>
-	int findNearPoint(T A, vector<Coordinate> & poly)//find the closest point of given grid point
-	{
-		int i, n = -1;
-		double minD = distance(A.x, A.y, poly[0].x, poly[0].y);
-		for (int i = 0; i < poly.size(); i++)
+		double diff = 1e-15;
+		double x0 = min(M.x, a);
+		double x1 = max(M.x, a);
+		double y0, y1;
+		double x2, y2;
+		double f0, f1, f2;
+		while (abs(x0 - x1) > diff)
 		{
-			if (minD != min(minD, distance(A.x, A.y, poly[i].x, poly[i].y)))
-			{
-				minD = distance(A.x, A.y, poly[i].x, poly[i].y);
-				n = i;
-			}
+			y0 = -(L.A * x0 + L.C) / L.B;
+			y1 = -(L.A * x1 + L.C) / L.B;
+			x2 = (x0 + x1) / 2;
+			y2 = -(L.A * x2 + L.C) / L.B;
+			f0 = (x0 - a) * (x0 - a) + (y0 - b) * (y0 - b) - r * r;
+			f1 = (x1 - a) * (x1 - a) + (y1 - b) * (y1 - b) - r * r;
+			f2 = (x2 - a) * (x2 - a) + (y2 - b) * (y2 - b) - r * r;
+			if (f0 * f2 >= 0)
+				x0 = x2;
+			else
+				x1 = x2;
 		}
-		return n;
+		P.x = (x0 + x1) / 2;
+		P.y = (y0 + y1) / 2;
 	}
-	int findNearPoint(double x, double y, vector<Coordinate> & poly)//find the closest point of given grid point
+	return P;
+}
+template<class T>
+double get_beta(T A, T B)//求出两个网格点与x轴的夹角
+{
+	double dy = abs(A.y - B.y);
+	double dx = abs(A.x - B.x);
+	double beta = atan(dy / dx);
+	return beta;
+}
+template<class T>
+int findNearPoint(T A, vector<Coordinate>& poly)//find the closest point of given grid point
+{
+	int i, n = -1;
+	double minD = distance(A.x, A.y, poly[0].x, poly[0].y);
+	for (int i = 0; i < poly.size(); i++)
 	{
-		int i, n = -1;
-		double minD = distance(x, y, poly[0].x, poly[0].y);
-		for (i = 0; i < poly.size(); i++)
+		if (minD != min(minD, distance(A.x, A.y, poly[i].x, poly[i].y)))
 		{
-			if (minD != min(minD, distance(x, y, poly[i].x, poly[i].y)))
-			{
-				minD = distance(x, y, poly[i].x, poly[i].y);
-				n = i;
-			}
+			minD = distance(A.x, A.y, poly[i].x, poly[i].y);
+			n = i;
 		}
-		return n;
 	}
+	return n;
+}
+int findNearPoint(double x, double y, vector<Coordinate>& poly)//find the closest point of given grid point
+{
+	int i, n = -1;
+	double minD = distance(x, y, poly[0].x, poly[0].y);
+	for (i = 0; i < poly.size(); i++)
+	{
+		if (minD != min(minD, distance(x, y, poly[i].x, poly[i].y)))
+		{
+			minD = distance(x, y, poly[i].x, poly[i].y);
+			n = i;
+		}
+	}
+	return n;
+}

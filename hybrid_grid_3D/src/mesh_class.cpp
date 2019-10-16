@@ -8,7 +8,7 @@ double Coordinate::distance(const T& c)
 	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 template <class T>
-Mesh_S& Mesh_S::operator=(const T& U)
+Mesh& Mesh::operator=(const T& U)
 {
 	x = U.x;
 	y = U.y;
@@ -28,24 +28,11 @@ Mesh_S& Mesh_S::operator=(const T& U)
 	type = U.type;
 	return *this;
 }
-Mesh_U& Mesh_U::operator =(const Mesh_S& S)
+Mesh& Mesh::operator =(const Coordinate& S)
 {
 	x = S.x;
 	y = S.y;
 	z = S.z;
-	id = S.id;
-	connectId = S.connectId;
-	rho = S.rho;
-	u = S.u;
-	p = S.p;
-	section = S.section;
-	sec_num = S.sec_num;
-	step = S.step;
-	neiborsec = S.neiborsec;
-	neiborsec_ad = S.neiborsec_ad;
-	neibor = S.neibor;
-	moveConnct = S.moveConnct;
-	type = S.type;
 	return *this;
 }
 

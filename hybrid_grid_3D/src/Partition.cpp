@@ -10,186 +10,153 @@ using std::vector;
 
 void partition_Point()//Partition existing grid points
 {
+	extern int xnum, ynum, znum;
 	extern string methodType;
 	if (methodType == "C")
 	{
-		vector<mesh*> t;
 		int i;
-		if (FlowType == "cylinder")
+		if (flowType == "cylinder")
 		{
-			extern vector <mesh> poly;
-			double x, y, xl, yl, xr, yr, xu, yu, xd, yd;
+			extern vector <Coordinate> poly;
+			extern vector<Mesh>ap;
 			double r1;
-			//the 2D cylinder (x-a)^2+(y-b)^2=r^2
-			int n1, n2, n3, n4, n, sizeA, size;
-			sizeA = AP.size();
+			Mesh tempu;
+			int sizeA, size;
+			sizeA = ap.size();
 			for (i = 0; i < sizeA; i++)
 			{
-				AP[i].id = i;
-				if (AP[i].type == "IN")
+				ap[i].id = i;
+				int n[6] = { 0 };
+				int sum = 0;
+				if (ap[i].type != "IN")
+					continue;
+				else if (ap[i].type == "IN")
 				{
-					AP[i].neibor.push_back(&AP[i + 1]);
-					AP[i].neibor.push_back(&AP[i + Xnum]);
-					AP[i].neibor.push_back(&AP[i - 1]);
-					AP[i].neibor.push_back(&AP[i - Xnum]);
+					ap[i].neibor.push_back(&ap[i + 1]);
+					ap[i].neibor.push_back(&ap[i - 1]);
+					ap[i].neibor.push_back(&ap[i + xnum]);
+					ap[i].neibor.push_back(&ap[i - xnum]);
+					ap[i].neibor.push_back(&ap[i + xnum * ynum]);
+					ap[i].neibor.push_back(&ap[i - xnum * ynum]);
 				}
-				x = AP[i].x;
-				y = AP[i].y;
-				xl = x - dx;
-				yl = y;
-				xr = x + dx;
-				yr = y;
-				xu = x;
-				yu = y + dy;
-				xd = x;
-				yd = y - dy;
-				n1 = n2 = n3 = n4 = 0;
-				if (i == 492)
-					i = 492;
-				//r1 = r + delta_r * dx;
-				//r1 decides the unstructural grid region 
-				//r1 is larger than r
-				//the larger of r1, the larger of the unstructural grid region
-				//if ((xl - a) * (xl - a) + (yl - b) * (yl - b) > r1* r1)
-				//	n1 = 1;
-				//if ((xr - a) * (xr - a) + (yr - b) * (yr - b) > r1* r1)
-				//	n2 = 1;
-				//if ((xu - a) * (xu - a) + (yu - b) * (yu - b) > r1* r1)
-				//	n3 = 1;
-				//if ((xd - a) * (xd - a) + (yd - b) * (yd - b) > r1* r1)
-				//	n4 = 1;
-				//if ((x - a) * (x - a) + (y - b) * (y - b) <= r1 * r1)
-
-
-				//if (judgeFieldInOut(AP[i], poly))
-				//	AP[i].section = 0, AP[i].sec_num = 0;
-				//else if (!judgeFieldInOut(AP[i], poly))
-
-				//{
-					//if (!judgeFieldInOut(xl, yl, poly))
-					//	n1 = 1;
-					//if (!judgeFieldInOut(xr, yr, poly))
-					//	n2 = 1;
-					//if (!judgeFieldInOut(xu, yu, poly))
-					//	n3 = 1;
-					//if (!judgeFieldInOut(xd, yd, poly))
-					//	n4 = 1;
-				if (judgeFieldInOut(AP[i], poly))
-					AP[i].section = 0, AP[i].sec_num = 0;
+				if (judgeFieldInOut(ap[i], poly))
+					ap[i].section = 0, ap[i].sec_num = 0;
 				else
 				{
-
-					if (!judgeFieldInOut(xl, yl, poly))
-						n1 = 1;
-					if (!judgeFieldInOut(xr, yr, poly))
-						n2 = 1;
-					if (!judgeFieldInOut(xu, yu, poly))
-						n3 = 1;
-					if (!judgeFieldInOut(xd, yd, poly))
-						n4 = 1;
-
-					n = n1 + n2 + n3 + n4;
-					if (n == 4)
-						AP[i].section = 1, AP[i].sec_num = 1;
+					for (int j = 0; j < 6; j++)
+					{
+						if (!judgeFieldInOut(*ap[i].neibor[j], poly))
+						//std::cout << ap[i].neibor[0] << std::endl;
+							n[j] = 1;
+						sum += n[j];
+					}
+					if (sum == 6)
+						ap[i].section = 1, ap[i].sec_num = 1;
 					else
 					{
 						double r1 = r;
-						int near_id = findNearPoint(AP[i], poly);
-						AP[i].section = -1, AP[i].sec_num = 0;
-						AP.push_back(AP[i]);
-						size = AP.size() - 1;
-						AP[size].id = size;
-						AP[size].connectId = i;
-						AP[i].connectId = size;
-						vector<mesh*> v;
-						AP[size].neibor.swap(v);
-						AP.push_back(poly[near_id]);
-
-						//if (AP[i].x < a)
-						//{
-						//	AP.push_back(getCrossPoint(AP[AP.size() - 1], a, b, r1));//create a new point on the body
-						//}
-						//else if (AP[i].y > b)
-						//{
-						//	double x0 = a, y0 = b + r1;
-						//	double k = tan(4.6 * ConstPara::pi / 180);
-						//	Line L1, L2;
-						//	L1.A = k, L1.B = -1, L1.C = y0 - k * x0;
-						//	L2.A = -1 / k, L2.B = -1, L2.C = AP[i].y - (-1 / k) * AP[i].x;
-
-						//	AP.push_back(getCrossPoint(L1, L2));
-						//}
-						//else if (AP[i].y < b)
-						//{
-						//	double x0 = a, y0 = b - r1;
-						//	double k = tan(-4.6 * ConstPara::pi / 180);
-						//	Line L1, L2;
-						//	L1.A = k, L1.B = -1, L1.C = y0 - k * x0;
-						//	L2.A = -1 / k, L2.B = -1, L2.C = AP[i].y - (-1 / k) * AP[i].x;
-						//	AP.push_back(getCrossPoint(L1, L2));
-						//}
-						AP[AP.size() - 1].id = AP.size() - 1;
-						AP[AP.size() - 1].type = "Body";
-						AP[AP.size() - 1].neibor.push_back(&AP[size]);
-						AP[AP.size() - 1].section = -2;
-						if (n == 3)
+						int near_id = findNearPoint(ap[i], poly);
+						ap[i].section = -1, ap[i].sec_num = 0;
+						ap.push_back(ap[i]);
+						size = ap.size() - 1;
+						ap[size].id = size;
+						ap[size].connectId = i;
+						ap[i].connectId = size;
+						ap.push_back(tempu);
+						ap[ap.size() - 1] = poly[near_id];
+						ap[ap.size() - 1].id = ap.size() - 1;
+						ap[ap.size() - 1].type = "Body";
+						ap[ap.size() - 1].neibor.push_back(&ap[size]);
+						ap[ap.size() - 1].section = -2;
+						if (sum == 5)
 						{
-							if (n1 == 0)
+							for (int j = 0; j < 6; j++)
 							{
-								AP[size].neibor.push_back(&AP[i + 1]);
-								AP[size].neibor.push_back(&AP[i + Xnum]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
-								AP[size].neibor.push_back(&AP[i - Xnum]);
-							}
-							else if (n2 == 0)
-							{
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
-								AP[size].neibor.push_back(&AP[i + Xnum]);
-								AP[size].neibor.push_back(&AP[i - 1]);
-								AP[size].neibor.push_back(&AP[i - Xnum]);
-							}
-							else if (n3 == 0)
-							{
-								AP[size].neibor.push_back(&AP[i + 1]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
-								AP[size].neibor.push_back(&AP[i - 1]);
-								AP[size].neibor.push_back(&AP[i - Xnum]);
-							}
-							else if (n4 == 0)
-							{
-								AP[size].neibor.push_back(&AP[i + 1]);
-								AP[size].neibor.push_back(&AP[i + Xnum]);
-								AP[size].neibor.push_back(&AP[i - 1]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								if (n[j] == 0)
+									ap[size].neibor[j] = &ap[ap.size() - 1];
 							}
 						}
-						else if (n == 2)
+						else if (sum == 4)
 						{
-							if (n1 == 0 && n3 == 0)
+							int n1, n2;
+							if (n[0] == 0)
 							{
-								AP[size].neibor.push_back(&AP[i + 1]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
-								AP[size].neibor.push_back(&AP[i - Xnum]);
+								n1 = 0;
+								if (n[4] == 0)
+									n2 = 4;
+								else if (n[2] == 0)
+									n2 = 2;
+								else if (n[5] == 0)
+									n2 = 5;
+								else if (n[3] == 0)
+									n2 = 3;
+								else if (n[1] == 0)
+									std::cout << "对侧坐标0,1为零，不符逻辑！" << std::endl;
 							}
-							if (n1 == 0 && n4 == 0)
+							else if (n[1] == 0)
 							{
-								AP[size].neibor.push_back(&AP[i + 1]);
-								AP[size].neibor.push_back(&AP[i + Xnum]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								n1 = 1;
+								if (n[4] == 0)
+									n2 = 4;
+								else if (n[2] == 0)
+									n2 = 2;
+								else if (n[5] == 0)
+									n2 = 5;
+								else if (n[3] == 0)
+									n2 = 3;
 							}
-							if (n2 == 0 && n3 == 0)
+							else if (n[2] == 0)
 							{
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
-								AP[size].neibor.push_back(&AP[i - 1]);
-								AP[size].neibor.push_back(&AP[i - Xnum]);
+								n1 = 2;
+								if (n[4] == 0)
+									n2 = 4;
+								else if (n[5] == 0)
+									n2 = 5;
+								else if (n[3] == 0)
+									std::cout << "对侧坐标2,3为零，不符逻辑！" << std::endl;
 							}
-							if (n2 == 0 && n4 == 0)
+							else if (n[3] == 0)
 							{
-								AP[size].neibor.push_back(&AP[i + Xnum]);
-								AP[size].neibor.push_back(&AP[i - 1]);
-								AP[size].neibor.push_back(&AP[AP.size() - 1]);
+								n1 = 3;
+								if (n[4] == 0)
+									n2 = 4;
+								else if (n[5] == 0)
+									n2 = 5;
 							}
+							else if (n[4] == 0)
+							{
+								n1 = 4;
+								if (n[5] == 0)
+									std::cout << "对侧坐标4,5为零，不符逻辑！" << std::endl;
+							}
+							else
+								std::cout << "sum != 0!!" << std::endl;
+							ap[size].neibor[n1] = &ap[ap.size() - 1];
+							ap[size].neibor[n2] = &ap[ap.size() - 1];
 						}
+						else if (sum == 3)
+						{
+							int n1, n2, n3;
+							if (n[0] + n[2] + n[4] == 0)
+								n1 = 0, n2 = 2, n3 = 4;
+							else if (n[0] + n[2] + n[5] == 0)
+								n1 = 0, n2 = 2, n3 = 5;
+							else if (n[0] + n[5] + n[3] == 0)
+								n1 = 0, n2 = 5, n3 = 3;
+							else if (n[1] + n[2] + n[4] == 0)
+								n1 = 1, n2 = 2, n3 = 4;
+							else if (n[1] + n[2] + n[5] == 0)
+								n1 = 1, n2 = 2, n3 = 5;
+							else if (n[1] + n[5] + n[3] == 0)
+								n1 = 1, n2 = 5, n3 = 3;
+							else
+								std::cout << "存在一些奇怪的组合！" << std::endl;
+							ap[size].neibor[n1] = &ap[ap.size() - 1];
+							ap[size].neibor[n2] = &ap[ap.size() - 1];
+							ap[size].neibor[n3] = &ap[ap.size() - 1];
+						}
+						else
+							std::cout << "sum = "<<sum<<"无法构成非结构点！" << std::endl;
 					}
 				}
 			}

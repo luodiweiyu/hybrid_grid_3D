@@ -15,12 +15,11 @@
 #include<algorithm>
 #include"include/mesh_class.h"
 using namespace std;
-vector <Mesh_S> ms;//所有结构网格节点
-vector <Mesh_S*> ps;//结构网格节点
-vector <Mesh_U> mu;//非结构网格节点
-vector <Mesh_U*> bound;
-vector<Mesh_S> msr;//记录上一时刻的物理量；
-vector<Mesh_U> mur;//记录上一时刻的物理量；
+vector<Mesh> ap;//all point
+vector <Mesh*> ms;//所有结构网格节点
+vector <Mesh*> mu;//非结构网格节点
+vector <Mesh*> bound;
+vector<Mesh> apr;//记录上一时刻的物理量；
 vector <polygon_mesh> PM;//多边形网格，用于输出，与计算无关
 vector<Coordinate> poly;//物体表面，变成很多散点，用于判断结构网格节点处于网格内外
 double dt;
@@ -28,25 +27,41 @@ double t_sim = 0;
 int step = 0;
 double res;
 extern double t_end;
+extern int xnum, ynum, znum;
 int main()
 {
 	control();
 	init_mesh();
 	polygonPoint(poly);
-	ofstream fout("poly.dat");
-	fout << "variables = x, y, z" << endl;
-	for (int i=0; i < poly.size(); i++)
-		fout << poly[i].x << "  " << poly[i].y << "  " << poly[i].z << endl;
 	getType();
 	partition_Point();
-	system("PAUSE")
-		/*
+	ofstream fout("ap.dat");
+	fout << "variables = x, y, z" << endl;
+	for (int i = 0; i < ap.size(); i++)
+		fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << endl;
+	fout.close();
 	sortPoint();
-	polymesh();
-	out_M("mesh/step = " + to_string(step));
+	fout.open("ms.dat");
+	fout << "variables = x, y, z" << endl;
+	for (int i = 0; i < ms.size(); i++)
+		fout << ms[i]->x << "  " << ms[i]->y << "  " << ms[i]->z << endl;
+	fout.close();
+	fout.open("mu.dat");
+	fout << "variables = x, y, z" << endl;
+	for (int i = 0; i < mu.size(); i++)
+		fout << mu[i]->x << "  " << mu[i]->y << "  " << mu[i]->z << endl;
+	fout.close();
+	fout.open("bound.dat");
+	fout << "variables = x, y, z" << endl;
+	for (int i = 0; i < bound.size(); i++)
+		fout << bound[i]->x << "  " << bound[i]->y << "  " << bound[i]->z << endl;
+	fout.close();
+	//polymesh();
+	//out_M("mesh/step = " + to_string(step));
 	//out_neighbor();
-	//coordinate_trans();
-	initFlow();
+	coordinate_trans();
+	system("PAUSE");
+	/*initFlow();
 	int i;
 	while (t_sim < t_end)
 	{
