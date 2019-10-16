@@ -11,15 +11,15 @@ void coordinate_trans()
 	extern double dt;
 	for (i = 0; i < mu.size(); i++)
 	{
-		mu[i]->xxi = 0.5 * (mu[i]->neibor[0]->x - mu[i]->neibor[1]->x);
-		mu[i]->yxi = 0.5 * (mu[i]->neibor[0]->y - mu[i]->neibor[1]->y);
-		mu[i]->zxi = 0.5 * (mu[i]->neibor[0]->z - mu[i]->neibor[1]->z);
-		mu[i]->xeta = 0.5 * (mu[i]->neibor[2]->x - mu[i]->neibor[3]->x);
-		mu[i]->yeta = 0.5 * (mu[i]->neibor[2]->y - mu[i]->neibor[3]->y);
-		mu[i]->zeta = 0.5 * (mu[i]->neibor[2]->z - mu[i]->neibor[3]->z);
-		mu[i]->xzeta = 0.5 * (mu[i]->neibor[4]->x - mu[i]->neibor[5]->x);
-		mu[i]->yzeta = 0.5 * (mu[i]->neibor[4]->y - mu[i]->neibor[5]->y);
-		mu[i]->zzeta = 0.5 * (mu[i]->neibor[4]->z - mu[i]->neibor[5]->z);
+		mu[i]->xxi = 0.5 * (mu[i]->neighbor[0]->x - mu[i]->neighbor[1]->x);
+		mu[i]->yxi = 0.5 * (mu[i]->neighbor[0]->y - mu[i]->neighbor[1]->y);
+		mu[i]->zxi = 0.5 * (mu[i]->neighbor[0]->z - mu[i]->neighbor[1]->z);
+		mu[i]->xeta = 0.5 * (mu[i]->neighbor[2]->x - mu[i]->neighbor[3]->x);
+		mu[i]->yeta = 0.5 * (mu[i]->neighbor[2]->y - mu[i]->neighbor[3]->y);
+		mu[i]->zeta = 0.5 * (mu[i]->neighbor[2]->z - mu[i]->neighbor[3]->z);
+		mu[i]->xzeta = 0.5 * (mu[i]->neighbor[4]->x - mu[i]->neighbor[5]->x);
+		mu[i]->yzeta = 0.5 * (mu[i]->neighbor[4]->y - mu[i]->neighbor[5]->y);
+		mu[i]->zzeta = 0.5 * (mu[i]->neighbor[4]->z - mu[i]->neighbor[5]->z);
 		mu[i]->xtau = 0;
 		mu[i]->ytau = 0;
 		mu[i]->ztau = 0;

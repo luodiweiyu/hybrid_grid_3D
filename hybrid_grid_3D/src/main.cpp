@@ -60,23 +60,23 @@ int main()
 	//out_M("mesh/step = " + to_string(step));
 	//out_neighbor();
 	coordinate_trans();
-	system("PAUSE");
-	/*initFlow();
+	initFlow();
 	int i;
+	
 	while (t_sim < t_end)
 	{
 		record();
 		get_dt();
-		//for (i = 0; i < ps.size(); i++)
-		//	update_p4_s(*ps[i]);
-		//for (i = 0; i < pu.size(); i++)
-		//{
-		//	if (pu[i]->neibor.size() == 3)
-		//		update_p3(*pu[i]);
-		//	else
-		//		update_p4_u(*pu[i]);
-		//	AP[pu[i]->connectId] = *pu[i];//replace
-		//}
+		for (i = 0; i < ps.size(); i++)
+			update_p4_s(*ps[i]);
+		for (i = 0; i < pu.size(); i++)
+		{
+			if (pu[i]->neighbor.size() == 3)
+				update_p3(*pu[i]);
+			else
+				update_p4_u(*pu[i]);
+			AP[pu[i]->connectId] = *pu[i];//replace
+		}
 		update_bound();
 		if (++step % 100 == 0)
 		{
@@ -85,12 +85,12 @@ int main()
 			else
 				res = compute_res();
 			cout << "step = " << step << "  t_sim = " << t_sim << "  dt = " << dt << "  res = " << res << endl;
-			out_M("mesh/step = " + to_string(step));
+			//out_M("mesh/step = " + to_string(step));
 		}
 		out_res();
 		t_sim = t_sim + dt;
 	}
-	out_M("mesh/step = " + to_string(step));
+	//out_M("mesh/step = " + to_string(step));
 	system("PAUSE");
-	*/
+	
 }

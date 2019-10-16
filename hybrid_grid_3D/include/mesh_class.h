@@ -21,9 +21,9 @@ public:
 	int section = 1;//分区
 	int sec_num;//分区后计算的参数1或0
 	int step = 0;//表明该点在何步骤更新的
-	int neiborsec = -1;//相邻分区，如果该值为负，则表示该点不是激波点，反之为相邻分区共用的激波点
-	int neiborsec_ad = -1;//相邻分区的地址
-	vector <Mesh*>neibor;//记录该格点的相邻格点位置信息
+	int neighborsec = -1;//相邻分区，如果该值为负，则表示该点不是激波点，反之为相邻分区共用的激波点
+	int neighborsec_ad = -1;//相邻分区的地址
+	vector <Mesh*>neighbor;//记录该格点的相邻格点位置信息
 	vector <int>moveConnct;//运动关联点，即本点运动与该moveConnect点有关
 	string type;//格点类型，分为上下左右边界以及内部，U，D,L,R,IN,激波点SHOCK，接触间断点DISCON（contact discontinuity）,激波相交点CENTER
 	double xix;

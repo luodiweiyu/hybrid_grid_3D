@@ -32,12 +32,12 @@ void partition_Point()//Partition existing grid points
 					continue;
 				else if (ap[i].type == "IN")
 				{
-					ap[i].neibor.push_back(&ap[i + 1]);
-					ap[i].neibor.push_back(&ap[i - 1]);
-					ap[i].neibor.push_back(&ap[i + xnum]);
-					ap[i].neibor.push_back(&ap[i - xnum]);
-					ap[i].neibor.push_back(&ap[i + xnum * ynum]);
-					ap[i].neibor.push_back(&ap[i - xnum * ynum]);
+					ap[i].neighbor.push_back(&ap[i + 1]);
+					ap[i].neighbor.push_back(&ap[i - 1]);
+					ap[i].neighbor.push_back(&ap[i + xnum]);
+					ap[i].neighbor.push_back(&ap[i - xnum]);
+					ap[i].neighbor.push_back(&ap[i + xnum * ynum]);
+					ap[i].neighbor.push_back(&ap[i - xnum * ynum]);
 				}
 				if (judgeFieldInOut(ap[i], poly))
 					ap[i].section = 0, ap[i].sec_num = 0;
@@ -45,8 +45,8 @@ void partition_Point()//Partition existing grid points
 				{
 					for (int j = 0; j < 6; j++)
 					{
-						if (!judgeFieldInOut(*ap[i].neibor[j], poly))
-						//std::cout << ap[i].neibor[0] << std::endl;
+						if (!judgeFieldInOut(*ap[i].neighbor[j], poly))
+							//std::cout << ap[i].neighbor[0] << std::endl;
 							n[j] = 1;
 						sum += n[j];
 					}
@@ -66,14 +66,14 @@ void partition_Point()//Partition existing grid points
 						ap[ap.size() - 1] = poly[near_id];
 						ap[ap.size() - 1].id = ap.size() - 1;
 						ap[ap.size() - 1].type = "Body";
-						ap[ap.size() - 1].neibor.push_back(&ap[size]);
+						ap[ap.size() - 1].neighbor.push_back(&ap[size]);
 						ap[ap.size() - 1].section = -2;
 						if (sum == 5)
 						{
 							for (int j = 0; j < 6; j++)
 							{
 								if (n[j] == 0)
-									ap[size].neibor[j] = &ap[ap.size() - 1];
+									ap[size].neighbor[j] = &ap[ap.size() - 1];
 							}
 						}
 						else if (sum == 4)
@@ -131,8 +131,8 @@ void partition_Point()//Partition existing grid points
 							}
 							else
 								std::cout << "sum != 0!!" << std::endl;
-							ap[size].neibor[n1] = &ap[ap.size() - 1];
-							ap[size].neibor[n2] = &ap[ap.size() - 1];
+							ap[size].neighbor[n1] = &ap[ap.size() - 1];
+							ap[size].neighbor[n2] = &ap[ap.size() - 1];
 						}
 						else if (sum == 3)
 						{
@@ -143,20 +143,24 @@ void partition_Point()//Partition existing grid points
 								n1 = 0, n2 = 2, n3 = 5;
 							else if (n[0] + n[5] + n[3] == 0)
 								n1 = 0, n2 = 5, n3 = 3;
+							else if (n[0] + n[3] + n[4] == 0)
+								n1 = 0, n2 = 3, n3 = 4;
 							else if (n[1] + n[2] + n[4] == 0)
 								n1 = 1, n2 = 2, n3 = 4;
 							else if (n[1] + n[2] + n[5] == 0)
 								n1 = 1, n2 = 2, n3 = 5;
 							else if (n[1] + n[5] + n[3] == 0)
 								n1 = 1, n2 = 5, n3 = 3;
+							else if (n[1] + n[3] + n[4] == 0)
+								n1 = 1, n2 = 3, n3 = 4;
 							else
 								std::cout << "存在一些奇怪的组合！" << std::endl;
-							ap[size].neibor[n1] = &ap[ap.size() - 1];
-							ap[size].neibor[n2] = &ap[ap.size() - 1];
-							ap[size].neibor[n3] = &ap[ap.size() - 1];
+							ap[size].neighbor[n1] = &ap[ap.size() - 1];
+							ap[size].neighbor[n2] = &ap[ap.size() - 1];
+							ap[size].neighbor[n3] = &ap[ap.size() - 1];
 						}
 						else
-							std::cout << "sum = "<<sum<<"无法构成非结构点！" << std::endl;
+							std::cout << "sum = " << sum << "无法构成非结构点！" << std::endl;
 					}
 				}
 			}

@@ -1,12 +1,12 @@
-//#include<iostream>
-//#include<fstream>
-//#include<iomanip>
-//#include<string>
-//#include<algorithm>
-//#include"include/const.h"
-//#include"include/shockwave.h"
-//#include"include/functions.h"
-//using namespace std;
+#include<iostream>
+#include<fstream>
+#include<iomanip>
+#include<string>
+#include<algorithm>
+#include"include/const.h"
+#include"include/shockwave.h"
+#include"include/functions.h"
+using namespace std;
 //using namespace MeshPara;
 //void out_mesh(string name)
 //{
@@ -355,24 +355,24 @@
 //	}
 //	fout << endl;
 //}
-//void out_res()
-//{
-//	extern double res;
-//	extern int step;
-//	extern double t_sim;
-//	ofstream fout;
-//	if (t_sim == 0)
-//	{
-//		fout.open("res.dat");
-//		fout << "Variables= t,res" << endl;
-//	}
-//	else if (step % 100 == 0)
-//	{
-//		fout.open("res.dat", ios::app);
-//		fout << t_sim << "   " << res << endl;
-//	}
-//	fout.close();
-//}
+void out_res()
+{
+	extern double res;
+	extern int step;
+	extern double t_sim;
+	ofstream fout;
+	if (t_sim == 0)
+	{
+		fout.open("res.dat");
+		fout << "Variables= t,res" << endl;
+	}
+	else if (step % 100 == 0)
+	{
+		fout.open("res.dat", ios::app);
+		fout << t_sim << "   " << res << endl;
+	}
+	fout.close();
+}
 //void outNeiborLines(vector<mesh*> m, string filename)
 //{
 //	int i, j;
@@ -381,7 +381,7 @@
 //	int E = 0;
 //	for (i = 0; i < m.size(); i++)
 //	{
-//		for (j = 0; j < m[i]->neibor.size(); j++)
+//		for (j = 0; j < m[i]->neighbor.size(); j++)
 //			E++;
 //	}
 //	fout << "variables = x,y" << endl;
@@ -392,8 +392,8 @@
 //	}
 //	for (i = 0; i < m.size(); i++)
 //	{
-//		for (j = 0; j < m[i]->neibor.size(); j++)
-//			fout << m[i]->id + 1 << "  " << m[i]->id + 1 << "  " << m[i]->neibor[j]->id + 1 << endl;
+//		for (j = 0; j < m[i]->neighbor.size(); j++)
+//			fout << m[i]->id + 1 << "  " << m[i]->id + 1 << "  " << m[i]->neighbor[j]->id + 1 << endl;
 //	}
 //}
 ////void outmesh_polygon(string name)
@@ -504,7 +504,7 @@
 //		using namespace ConstPara;
 //		if (AP[i].type == "Body")
 //		{
-//			delta_d.push_back(distance(AP[i], *AP[i].neibor[0]));
+//			delta_d.push_back(distance(AP[i], *AP[i].neighbor[0]));
 //			theta.push_back(get_theta(AP[i].x, AP[i].y, a, b));
 //			if (AP[i].x < a && AP[i].y > b)
 //				theta[theta.size() - 1] = pi + theta[theta.size() - 1];
@@ -579,8 +579,8 @@
 //	int E = 0;
 //	for (int i = 0; i < bb.size(); i++)
 //	{
-//		for (int j = 0; j < bb[i]->neibor.size(); j++)
-//			if (bb[i]->neibor[j]->type == "Body")
+//		for (int j = 0; j < bb[i]->neighbor.size(); j++)
+//			if (bb[i]->neighbor[j]->type == "Body")
 //				E++;
 //	}
 //	fout << "variables = x,y" << endl;
@@ -590,9 +590,9 @@
 //	for (int i = 0; i < bb.size(); i++)
 //	{
 //
-//		for (int j = 0; j < bb[i]->neibor.size(); j++)
-//			if (bb[i]->neibor[j]->type == "Body")
-//				fout << bb[i]->id << "  " << bb[i]->id << "  " << bb[i]->neibor[j]->id << endl;
+//		for (int j = 0; j < bb[i]->neighbor.size(); j++)
+//			if (bb[i]->neighbor[j]->type == "Body")
+//				fout << bb[i]->id << "  " << bb[i]->id << "  " << bb[i]->neighbor[j]->id << endl;
 //	}
 //	fout.close();
 //

@@ -21,9 +21,9 @@ Mesh& Mesh::operator=(const T& U)
 	section = U.section;
 	sec_num = U.sec_num;
 	step = U.step;
-	neiborsec = U.neiborsec;
-	neiborsec_ad = U.neiborsec_ad;
-	neibor = U.neibor;
+	neighborsec = U.neighborsec;
+	neighborsec_ad = U.neighborsec_ad;
+	neighbor = U.neighbor;
 	moveConnct = U.moveConnct;
 	type = U.type;
 	return *this;
