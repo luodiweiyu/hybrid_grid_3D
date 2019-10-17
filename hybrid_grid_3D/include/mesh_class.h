@@ -52,7 +52,7 @@ public:
 	double ztau;
 	double J;//雅可比行列式
 	Mesh& operator =(const Coordinate& S);
-	template <class T>
-	Mesh& operator =(const T& U);//等于号重载
+	//template <class T>
+	//Mesh& operator =(const T& U);//等于号重载
 
 };

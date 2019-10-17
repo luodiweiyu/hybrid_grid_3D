@@ -7,7 +7,7 @@ using std::vector;
 using std::string;
 const double pi = 3.14159265358979323846264338327950288419716939937510582097494459230781640628;
 const double random = 0.495;
-const double r = 1.2;
+const double r = 0.2;
 const double a = 3;
 const double b = 1.5;
 const double c = 1.5;

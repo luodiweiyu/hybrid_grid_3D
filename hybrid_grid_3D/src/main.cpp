@@ -44,7 +44,10 @@ int main()
 	fout.open("ms.dat");
 	fout << "variables = x, y, z" << endl;
 	for (int i = 0; i < ms.size(); i++)
-		fout << ms[i]->x << "  " << ms[i]->y << "  " << ms[i]->z << endl;
+	{
+		if (ms[i]->section != 0)
+			fout << ms[i]->x << "  " << ms[i]->y << "  " << ms[i]->z << endl;
+	}
 	fout.close();
 	fout.open("mu.dat");
 	fout << "variables = x, y, z" << endl;
@@ -70,15 +73,23 @@ int main()
 	{
 		record();
 		get_dt();
-#pragma  omp parallel for
 		for (i = 0; i < ms.size(); i++)
 			update_p4_s(*ms[i]);
-#pragma  omp parallel for
-		for (i = 0; i < mu.size(); i++)
-		{
-			update_p4_u(*mu[i]);
-			ap[mu[i]->connectId] = *mu[i];
-		}
+		//for (i = 0; i < mu.size(); i++)
+		//{
+		//	update_p4_u(*mu[i]);
+		//	//mu[i]->rho = ap[mu[i]->connectId - 1].rho;
+		//	//mu[i]->p = ap[mu[i]->connectId - 1].p;
+		//	//mu[i]->u.x = ap[mu[i]->connectId - 1].u.x;
+		//	//mu[i]->u.y = ap[mu[i]->connectId - 1].u.y;
+		//	//mu[i]->u.z = ap[mu[i]->connectId - 1].u.z;
+		//	//mu[i]->rho = 10;
+		//	//mu[i]->p = 10;
+		//	//mu[i]->u.x = 0;
+		//	//mu[i]->u.y = 0;
+		//	//mu[i]->u.z = 0;
+		//	ap[mu[i]->connectId] = *mu[i];
+		//}
 		update_bound();
 		if (++step % 100 == 0)
 		{
@@ -88,19 +99,18 @@ int main()
 			res = compute_res();
 			cout << "step = " << step << "  t_sim = " << t_sim << "  dt = " << dt << "  res = " << res << endl;
 			//out_M("mesh/step = " + to_string(step));
-			fout.open("mesh/ap step = " + to_string(step) + ".dat");
+			//fout.open("mesh/ap step = " + to_string(step) + ".dat");
+			//fout << "variables = x, y, z,rho" << endl;
+			//for (int i = 0; i < ap.size(); i++)
+			//{
+			//	fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].rho<< endl;
+			//}
+			//fout.close();
+			fout.open("mesh/ms step = " + to_string(step) + ".dat");
 			fout << "variables = x, y, z,rho" << endl;
-			for (int i = 0; i < ap.size(); i++)
+			for (int i = 0; i < ms.size(); i++)
 			{
-				fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].u.x << endl;
-			}
-			fout.close();
-			fout.open("mesh/mu step = " + to_string(step) + ".dat");
-			fout << "variables = x, y, z,rho" << endl;
-			for (int i = 0; i < ap.size(); i++)
-			{
-				if (ap[i].section == -1 || ap[i].type == "Body")
-					fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].u.x << endl;
+					fout << ms[i]->x << "  " << ms[i]->y << "  " << ms[i]->z << "  " << ms[i]->rho << endl;
 			}
 			fout.close();
 		}

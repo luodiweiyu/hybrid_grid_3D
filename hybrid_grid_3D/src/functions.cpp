@@ -262,7 +262,7 @@ void update_bound()
 		{
 			bound[i]->rho = 10;
 			bound[i]->p = 10;
-			bound[i]->u.x = 3 * sqrt(gama * bound[i]->p / bound[i]->rho);
+			bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
 			bound[i]->u.y = 0;
 			bound[i]->u.z = 0;
 		}
@@ -310,22 +310,22 @@ void update_bound()
 		}
 		else if (bound[i]->type == "Body")
 		{
-			//bound[i]->rho = bound[i]->neighbor[0]->rho;
-			//bound[i]->u.x = bound[i]->neighbor[0]->u.x;
-			//bound[i]->u.y = bound[i]->neighbor[0]->u.y;
-			//bound[i]->u.z = bound[i]->neighbor[0]->u.z;
-			//bound[i]->p = bound[i]->neighbor[0]->p;
+			bound[i]->rho = bound[i]->neighbor[0]->rho;
+			bound[i]->u.x = bound[i]->neighbor[0]->u.x;
+			bound[i]->u.y = bound[i]->neighbor[0]->u.y;
+			bound[i]->u.z = bound[i]->neighbor[0]->u.z;
+			bound[i]->p = bound[i]->neighbor[0]->p;
 			//bound[i]->rho = 10;
 			//bound[i]->p = 10;
 			//bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
 			//bound[i]->u.y = 0;
 			//bound[i]->u.z = 0;
 
-			bound[i]->rho = 10;
-			bound[i]->p = 10;
-			bound[i]->u.x = 0;
-			bound[i]->u.y = 0;
-			bound[i]->u.z = 0;
+			//bound[i]->rho = 10;
+			//bound[i]->p = 10;
+			//bound[i]->u.x = 0;
+			//bound[i]->u.y = 0;
+			//bound[i]->u.z = 0;
 
 		}
 	}
