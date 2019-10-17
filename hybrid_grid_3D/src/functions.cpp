@@ -40,7 +40,7 @@ void get_dt()
 			max2 = max(max3, maxzeta);
 		}
 		else
-			std::cout << "id = " << i << "不是6个相邻节点！neighborSize = "<<ap[i].neighbor.size() << std::endl;
+			std::cout << "id = " << i << "不是6个相邻节点！neighborSize = " << ap[i].neighbor.size() << std::endl;
 	}
 
 	t = cfl / (max1 + max2 + max3);
@@ -136,101 +136,116 @@ void record()
 //	p.u.y = U[2] / U[0];
 //	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u.x * p.u.x + p.u.y * p.u.y));
 //}
-//void update_p4_s(Mesh& p)
-////structral grid point,4 neighbor points
-////事实上不应该坐标变换
-//{
-//	extern vector <Mesh> msr;
-//	extern double dt;
-//	int i, j;
-//	int n1, n2, n3, n4;
-//	double U[4], U1[4], U2[4];
-//	extern double gama;
-//	Flux Fll, Flr, Fcl, Fcr, Frl, Frr;
-//	Flux Gdd, Gdu, Gcd, Gcu, Gud, Guu;
-//
-//	int id;
-//	id = p.id;
-//	U[0] = msr[id].rho;
-//	U[1] = msr[id].rho * p.u.x;
-//	U[2] = msr[id].rho * p.u.y;
-//	U[3] = 0.5 * msr[id].rho * (msr[id].u.x * msr[id].u.x + msr[id].u.y * msr[id].u.y) + msr[id].p / (gama - 1);
-//
-//	n1 = p.neighbor[0]->id;
-//	n2 = p.neighbor[1]->id;
-//	n3 = p.neighbor[2]->id;
-//	n4 = p.neighbor[3]->id;
-//
-//
-//	Fll = VanLeerB(msr[n3], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//	Flr = VanLeerA(msr[n3], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//	Fcl = VanLeerB(msr[id], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//	Fcr = VanLeerA(msr[id], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//	Frl = VanLeerB(msr[n1], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//	Frr = VanLeerA(msr[n1], msr[id].xix[0], msr[id].xiy[0], msr[id].xit[0], msr[id].J[0]);
-//
-//	Gdd = VanLeerB(msr[n4], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//	Gdu = VanLeerA(msr[n4], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//	Gcd = VanLeerB(msr[id], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//	Gcu = VanLeerA(msr[id], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//	Gud = VanLeerB(msr[n2], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//	Guu = VanLeerA(msr[n2], msr[id].etax[0], msr[id].etay[0], msr[id].etat[0], msr[id].J[0]);
-//
-//	U[0] = U[0] - dt * p.J[0] * p.sec_num * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
-//	U[1] = U[1] - dt * p.J[0] * p.sec_num * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
-//	U[2] = U[2] - dt * p.J[0] * p.sec_num * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
-//	U[3] = U[3] - dt * p.J[0] * p.sec_num * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
-//	p.rho = U[0];
-//	p.u = U[1] / U[0];
-//	p.v = U[2] / U[0];
-//	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u * p.u + p.v * p.v));
-//}
-//void update_p4_u(Mesh& p)
-////unstructral grid point,4 neighbor points
-//{
-//	extern vector <Mesh> mur;
-//	extern double dt;
-//	int i, j;
-//	int n1, n2, n3, n4;
-//	double U[4], U1[4], U2[4];
-//	extern double gama;
-//	Flux Fll, Flr, Fcl, Fcr, Frl, Frr;
-//	Flux Gdd, Gdu, Gcd, Gcu, Gud, Guu;
-//
-//	int id;
-//	id = p.id;
-//	U[0] = mur[id].rho;
-//	U[1] = mur[id].rho * p.u.x;
-//	U[2] = mur[id].rho * p.u.y;
-//	U[3] = 0.5 * mur[id].rho * (mur[id].u.x * mur[id].u.x + mur[id].u.y * mur[id].u.y) + mur[id].p / (gama - 1);
-//
-//	n1 = p.neighbor[0]->id;
-//	n2 = p.neighbor[1]->id;
-//	n3 = p.neighbor[2]->id;
-//	n4 = p.neighbor[3]->id;
-//	Fll = VanLeerB(mur[n3], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//	Flr = VanLeerA(mur[n3], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//	Fcl = VanLeerB(mur[id], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//	Fcr = VanLeerA(mur[id], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//	Frl = VanLeerB(mur[n1], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//	Frr = VanLeerA(mur[n1], mur[id].xix[0], mur[id].xiy[0], mur[id].xit[0], mur[id].J[0]);
-//
-//	Gdd = VanLeerB(mur[n4], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//	Gdu = VanLeerA(mur[n4], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//	Gcd = VanLeerB(mur[id], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//	Gcu = VanLeerA(mur[id], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//	Gud = VanLeerB(mur[n2], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//	Guu = VanLeerA(mur[n2], mur[id].etax[0], mur[id].etay[0], mur[id].etat[0], mur[id].J[0]);
-//
-//	U[0] = U[0] - dt * p.J[0] * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcu.f1 - Gdu.f1 + Gud.f1 - Gcd.f1);
-//	U[1] = U[1] - dt * p.J[0] * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcu.f2 - Gdu.f2 + Gud.f2 - Gcd.f2);
-//	U[2] = U[2] - dt * p.J[0] * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcu.f3 - Gdu.f3 + Gud.f3 - Gcd.f3);
-//	U[3] = U[3] - dt * p.J[0] * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcu.f4 - Gdu.f4 + Gud.f4 - Gcd.f4);
-//	p.rho = U[0];
-//	p.u.x = U[1] / U[0];
-//	p.u.y = U[2] / U[0];
-//	p.p = (gama - 1) * (U[3] - 0.5 * p.rho * (p.u.x * p.u.x + p.u.y * p.u.y));
-//}
+void update_p4_u(Mesh& p)
+//structral grid point,4 neighbor points
+//事实上不应该坐标变换
+{
+	extern vector <Mesh> apr;
+	extern double dt;
+	int i, j;
+	int n[6] = { 0 };
+	double U[5];
+	extern double gama;
+	Flux Flr, Fcl, Fcr, Frl;
+	Flux Glr, Gcl, Gcr, Grl;
+	Flux Hlr, Hcl, Hcr, Hrl;
+
+	int id;
+	id = p.id;
+	U[0] = apr[id].rho;
+	U[1] = apr[id].rho * p.u.x;
+	U[2] = apr[id].rho * p.u.y;
+	U[3] = apr[id].rho * p.u.z;
+	U[4] = 0.5 * apr[id].rho * (apr[id].u.x * apr[id].u.x + apr[id].u.y * apr[id].u.y + apr[id].u.z * apr[id].u.z) + apr[id].p / (gama - 1);
+
+	n[0] = p.neighbor[0]->id;
+	n[1] = p.neighbor[1]->id;
+	n[2] = p.neighbor[2]->id;
+	n[3] = p.neighbor[3]->id;
+	n[4] = p.neighbor[4]->id;
+	n[5] = p.neighbor[5]->id;
+
+	Flr = VanLeer(apr[n[1]], apr[id], "xi", "R");
+	Fcl = VanLeer(apr[id], apr[id], "xi", "L");
+	Fcr = VanLeer(apr[id], apr[id], "xi", "R");
+	Frl = VanLeer(apr[n[0]], apr[id], "xi", "L");
+
+	Glr = VanLeer(apr[n[3]], apr[id], "eta", "R");
+	Gcl = VanLeer(apr[id], apr[id], "eta", "L");
+	Gcr = VanLeer(apr[id], apr[id], "eta", "R");
+	Grl = VanLeer(apr[n[2]], apr[id], "eta", "L");
+
+	Hlr = VanLeer(apr[n[5]], apr[id], "zeta", "R");
+	Hcl = VanLeer(apr[id], apr[id], "zeta", "L");
+	Hcr = VanLeer(apr[id], apr[id], "zeta", "R");
+	Hrl = VanLeer(apr[n[4]], apr[id], "zeta", "L");
+
+	U[0] = U[0] - dt * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcr.f1 - Glr.f1 + Grl.f1 - Gcl.f1 + Hcr.f1 - Hlr.f1 + Hrl.f1 - Hcl.f1);
+	U[1] = U[1] - dt * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcr.f2 - Glr.f2 + Grl.f2 - Gcl.f2 + Hcr.f2 - Hlr.f2 + Hrl.f2 - Hcl.f2);
+	U[2] = U[2] - dt * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcr.f3 - Glr.f3 + Grl.f3 - Gcl.f3 + Hcr.f3 - Hlr.f3 + Hrl.f3 - Hcl.f3);
+	U[3] = U[3] - dt * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcr.f4 - Glr.f4 + Grl.f4 - Gcl.f4 + Hcr.f4 - Hlr.f4 + Hrl.f4 - Hcl.f4);
+	U[4] = U[4] - dt * (Fcr.f5 - Flr.f5 + Frl.f5 - Fcl.f5 + Gcr.f5 - Glr.f5 + Grl.f5 - Gcl.f5 + Hcr.f5 - Hlr.f5 + Hrl.f5 - Hcl.f5);
+	p.rho = U[0];
+	p.u.x = U[1] / U[0];
+	p.u.y = U[2] / U[0];
+	p.u.z = U[3] / U[0];
+	p.p = (gama - 1) * (U[4] - 0.5 * p.rho * (p.u.x * p.u.x + p.u.y * p.u.y + p.u.z * p.u.z));
+}
+void update_p4_s(Mesh& p)
+//structral grid point,4 neighbor points
+//事实上不应该坐标变换
+{
+	extern vector <Mesh> apr;
+	extern double dt;
+	int i, j;
+	int n[6] = { 0 };
+	double U[5];
+	extern double gama;
+	Flux Flr, Fcl, Fcr, Frl;
+	Flux Glr, Gcl, Gcr, Grl;
+	Flux Hlr, Hcl, Hcr, Hrl;
+
+	int id;
+	id = p.id;
+	U[0] = apr[id].rho;
+	U[1] = apr[id].rho * p.u.x;
+	U[2] = apr[id].rho * p.u.y;
+	U[3] = apr[id].rho * p.u.z;
+	U[4] = 0.5 * apr[id].rho * (apr[id].u.x * apr[id].u.x + apr[id].u.y * apr[id].u.y + apr[id].u.z * apr[id].u.z) + apr[id].p / (gama - 1);
+
+	n[0] = p.neighbor[0]->id;
+	n[1] = p.neighbor[1]->id;
+	n[2] = p.neighbor[2]->id;
+	n[3] = p.neighbor[3]->id;
+	n[4] = p.neighbor[4]->id;
+	n[5] = p.neighbor[5]->id;
+
+	Flr = VanLeer(apr[n[1]], "x", "R");
+	Fcl = VanLeer(apr[id], "x", "L");
+	Fcr = VanLeer(apr[id], "x", "R");
+	Frl = VanLeer(apr[n[0]], "x", "L");
+
+	Glr = VanLeer(apr[n[3]], "y", "R");
+	Gcl = VanLeer(apr[id], "y", "L");
+	Gcr = VanLeer(apr[id], "y", "R");
+	Grl = VanLeer(apr[n[2]], "y", "L");
+
+	Hlr = VanLeer(apr[n[5]], "z", "R");
+	Hcl = VanLeer(apr[id], "z", "L");
+	Hcr = VanLeer(apr[id], "z", "R");
+	Hrl = VanLeer(apr[n[4]], "z", "L");
+
+	U[0] = U[0] - dt * p.sec_num * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcr.f1 - Glr.f1 + Grl.f1 - Gcl.f1 + Hcr.f1 - Hlr.f1 + Hrl.f1 - Hcl.f1);
+	U[1] = U[1] - dt * p.sec_num * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcr.f2 - Glr.f2 + Grl.f2 - Gcl.f2 + Hcr.f2 - Hlr.f2 + Hrl.f2 - Hcl.f2);
+	U[2] = U[2] - dt * p.sec_num * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcr.f3 - Glr.f3 + Grl.f3 - Gcl.f3 + Hcr.f3 - Hlr.f3 + Hrl.f3 - Hcl.f3);
+	U[3] = U[3] - dt * p.sec_num * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcr.f4 - Glr.f4 + Grl.f4 - Gcl.f4 + Hcr.f4 - Hlr.f4 + Hrl.f4 - Hcl.f4);
+	U[4] = U[4] - dt * p.sec_num * (Fcr.f5 - Flr.f5 + Frl.f5 - Fcl.f5 + Gcr.f5 - Glr.f5 + Grl.f5 - Gcl.f5 + Hcr.f5 - Hlr.f5 + Hrl.f5 - Hcl.f5);
+	p.rho = U[0];
+	p.u.x = U[1] / U[0];
+	p.u.y = U[2] / U[0];
+	p.u.z = U[3] / U[0];
+	p.p = (gama - 1) * (U[4] - 0.5 * p.rho * (p.u.x * p.u.x + p.u.y * p.u.y + p.u.z * p.u.z));
+}
 void update_bound()
 {
 	extern vector <Mesh*>bound;
@@ -239,7 +254,7 @@ void update_bound()
 	extern double gama;
 	int i;
 	int id;
-
+#pragma  omp parallel for private(id)
 	for (i = 0; i < bound.size(); i++)
 	{
 		id = bound[i]->id;
@@ -247,9 +262,9 @@ void update_bound()
 		{
 			bound[i]->rho = 10;
 			bound[i]->p = 10;
-			bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
+			bound[i]->u.x = 3 * sqrt(gama * bound[i]->p / bound[i]->rho);
 			bound[i]->u.y = 0;
-			bound[i]->u.z= 0;
+			bound[i]->u.z = 0;
 		}
 		else if (bound[i]->type == "X+")
 		{
@@ -261,7 +276,7 @@ void update_bound()
 		}
 		else if (bound[i]->type == "Y-")
 		{
-			bound[i]->rho = ap[id +xnum].rho;
+			bound[i]->rho = ap[id + xnum].rho;
 			bound[i]->u.x = ap[id + xnum].u.x;
 			bound[i]->u.y = ap[id + xnum].u.y;
 			bound[i]->u.z = ap[id + xnum].u.z;
@@ -275,28 +290,37 @@ void update_bound()
 			bound[i]->u.y = ap[id - xnum].u.y;
 			bound[i]->u.z = ap[id - xnum].u.z;
 			bound[i]->p = ap[id - xnum].p;
-
 		}
 		else if (bound[i]->type == "Z-")
 		{
-			bound[i]->rho = ap[id +xnum*ynum].rho;
-			bound[i]->u.x = ap[id +xnum*ynum].u.x;
-			bound[i]->u.y = ap[id +xnum*ynum].u.y;
-			bound[i]->u.z = ap[id +xnum*ynum].u.z;
-			bound[i]->p = ap[id +xnum*ynum].p;
-
+			bound[i]->rho = ap[id + xnum * ynum].rho;
+			bound[i]->u.x = ap[id + xnum * ynum].u.x;
+			bound[i]->u.y = ap[id + xnum * ynum].u.y;
+			bound[i]->u.z = ap[id + xnum * ynum].u.z;
+			bound[i]->p = ap[id + xnum * ynum].p;
 		}
 		else if (bound[i]->type == "Z+")
 		{
-			bound[i]->rho = ap[id -xnum*ynum].rho;
-			bound[i]->u.x = ap[id -xnum*ynum].u.x;
-			bound[i]->u.y = ap[id -xnum*ynum].u.y;
-			bound[i]->u.z = ap[id -xnum*ynum].u.z;
-			bound[i]->p = ap[id -xnum*ynum].p;
+			bound[i]->rho = ap[id - xnum * ynum].rho;
+			bound[i]->u.x = ap[id - xnum * ynum].u.x;
+			bound[i]->u.y = ap[id - xnum * ynum].u.y;
+			bound[i]->u.z = ap[id - xnum * ynum].u.z;
+			bound[i]->p = ap[id - xnum * ynum].p;
 
 		}
 		else if (bound[i]->type == "Body")
 		{
+			//bound[i]->rho = bound[i]->neighbor[0]->rho;
+			//bound[i]->u.x = bound[i]->neighbor[0]->u.x;
+			//bound[i]->u.y = bound[i]->neighbor[0]->u.y;
+			//bound[i]->u.z = bound[i]->neighbor[0]->u.z;
+			//bound[i]->p = bound[i]->neighbor[0]->p;
+			//bound[i]->rho = 10;
+			//bound[i]->p = 10;
+			//bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
+			//bound[i]->u.y = 0;
+			//bound[i]->u.z = 0;
+
 			bound[i]->rho = 10;
 			bound[i]->p = 10;
 			bound[i]->u.x = 0;

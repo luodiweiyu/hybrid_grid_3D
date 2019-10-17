@@ -8,13 +8,15 @@ double distance(Coordinate& a, Coordinate& b)
 {
 	double dx = a.x - b.x;
 	double dy = a.y - b.y;
-	return sqrt(dx * dx + dy * dy);
+	double dz = a.z - b.z;
+	return sqrt(dx * dx + dy * dy + dz * dz);
 }
-double distance(double x1, double y1, double x2, double y2)
+double distance(double x1, double y1, double z1, double x2, double y2, double z2)
 {
 	double dx = x1 - x2;
 	double dy = y1 - y2;
-	return sqrt(dx * dx + dy * dy);
+	double dz = z1 - z2;
+	return sqrt(dx * dx + dy * dy + dz * dz);
 }
 
 double get_theta(double x1, double y1, double x2, double y2)//求直线与x轴的夹角
@@ -132,8 +134,10 @@ bool judgeFieldInOut(Mesh& A, vector <Coordinate>& poly)
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
 	//just for debug,the region is a sphere
+	extern double dx;
+	double r1 = r + 0.5 * dx;
 	double judge = (A.x - a) * (A.x - a) + (A.y - b) * (A.y - b) + (A.z - c) * (A.z - c);
-	if (judge < r * r)
+	if (judge < r1 * r1)
 		return 1;
 	else
 		return 0;
@@ -187,21 +191,24 @@ bool judgeFieldInOut(Mesh& A, vector <Coordinate>& poly)
 	}
 	return c;
 }
-bool judgeFieldInOut(double x, double y, vector <Coordinate>& poly)
+bool judgeFieldInOut(double x, double y, double z, vector <Coordinate>& poly)
 //judge whether the point is inside the polygon
 //html: https://blog.csdn.net/u011722133/article/details/52813374 
 {
-	float maxX, maxY, minX, minY;
+	float maxX, maxY, maxZ, minX, minY, minZ;
 	extern double dx, dy;
 	maxX = minX = poly[0].x;
 	maxY = minY = poly[0].y;
+	maxZ = minZ = poly[0].z;
 	int i, j, c = 0;
 	for (int i = 0; i < poly.size(); i++)
 	{
 		maxX = max(maxX, poly[i].x);
 		maxY = max(maxY, poly[i].y);
+		maxZ = max(maxZ, poly[i].z);
 		minX = min(minX, poly[i].x);
 		minY = min(minY, poly[i].y);
+		minZ = min(minZ, poly[i].z);
 	}
 	if (x<minX || x>maxX || y<minY || y>maxY)
 		c = 0;
@@ -215,25 +222,25 @@ bool judgeFieldInOut(double x, double y, vector <Coordinate>& poly)
 		}
 	if (c == 0)
 	{
-		int near_id = findNearPoint(x, y, poly);
+		int near_id = findNearPoint(x, y, z, poly);
 		double d1, d2, d3;
 		if (near_id == 0)
 		{
-			d1 = distance(x, y, poly[poly.size() - 1].x, poly[poly.size() - 1].y);
-			d2 = distance(x, y, poly[0].x, poly[0].y);
-			d3 = distance(x, y, poly[1].x, poly[1].y);
+			d1 = distance(x, y, z, poly[poly.size() - 1].x, poly[poly.size() - 1].y, poly[poly.size() - 1].z);
+			d2 = distance(x, y, z, poly[0].x, poly[0].y, poly[0].z);
+			d3 = distance(x, y, z, poly[1].x, poly[1].y, poly[1].z);
 		}
 		else if (near_id == poly.size() - 1)
 		{
-			d1 = distance(x, y, poly[poly.size() - 2].x, poly[poly.size() - 2].y);
-			d2 = distance(x, y, poly[poly.size() - 1].x, poly[poly.size() - 1].y);
-			d3 = distance(x, y, poly[0].x, poly[0].y);
+			d1 = distance(x, y, z, poly[poly.size() - 2].x, poly[poly.size() - 2].y, poly[poly.size() - 2].z);
+			d2 = distance(x, y, z, poly[poly.size() - 1].x, poly[poly.size() - 1].y, poly[poly.size() - 1].z);
+			d3 = distance(x, y, z, poly[0].x, poly[0].y, poly[0].z);
 		}
 		else
 		{
-			d1 = distance(x, y, poly[near_id - 1].x, poly[near_id - 1].y);
-			d2 = distance(x, y, poly[near_id].x, poly[near_id].y);
-			d3 = distance(x, y, poly[near_id + 1].x, poly[near_id + 1].y);
+			d1 = distance(x, y, z, poly[near_id - 1].x, poly[near_id - 1].y, poly[near_id - 1].z);
+			d2 = distance(x, y, z, poly[near_id].x, poly[near_id].y, poly[near_id].z);
+			d3 = distance(x, y, z, poly[near_id + 1].x, poly[near_id + 1].y, poly[near_id + 1].z);
 		}
 		if (d2 < 0.5 * dx/*d1 / d2 > 2 || d2 / d1 > 2 || d2 / d3 > 2 || d3 / d2 > 2*/)
 			c = !c;
@@ -271,7 +278,7 @@ void polygonPoint(vector <Coordinate>& poly)
 {
 	Coordinate c1, c2, c3, c4, c0;
 	Coordinate v1, v2, v3;
-	double S = 4000;
+	double S = 40000;
 	if (poly.size() != 0)
 		poly.clear();
 	//Blunt body problem
@@ -331,11 +338,15 @@ void polygonPoint(vector <Coordinate>& poly)
 	//cylinder problem
 	else
 	{
+		extern double zr;
 		double beta = 0;
 		double theta = 0;
 		while (poly.size() < S)
 		{
 			beta = rand() / double(RAND_MAX) * 2 * pi;
+			//c0.x = r * cos(beta) + a;
+			//c0.y = r * sin(beta) + b;
+			//c0.z = rand() / double(RAND_MAX) * zr;
 			theta = rand() / double(RAND_MAX) * pi;
 			c0.x = r * sin(theta) * cos(beta) + a;
 			c0.y = r * sin(theta) * sin(beta) + b;
@@ -431,26 +442,26 @@ template<class T>
 int findNearPoint(T A, vector<Coordinate>& poly)//find the closest point of given grid point
 {
 	int i, n = -1;
-	double minD = distance(A.x, A.y, poly[0].x, poly[0].y);
+	double minD = distance(A.x, A.y, A.z, poly[0].x, poly[0].y, poly[0].z);
 	for (int i = 0; i < poly.size(); i++)
 	{
-		if (minD != min(minD, distance(A.x, A.y, poly[i].x, poly[i].y)))
+		if (minD != min(minD, distance(A.x, A.y, A.z, poly[i].x, poly[i].y, poly[i].z)))
 		{
-			minD = distance(A.x, A.y, poly[i].x, poly[i].y);
+			minD = distance(A.x, A.y, A.z, poly[i].x, poly[i].y, poly[i].z);
 			n = i;
 		}
 	}
 	return n;
 }
-int findNearPoint(double x, double y, vector<Coordinate>& poly)//find the closest point of given grid point
+int findNearPoint(double x, double y, double z, vector<Coordinate>& poly)//find the closest point of given grid point
 {
 	int i, n = -1;
-	double minD = distance(x, y, poly[0].x, poly[0].y);
+	double minD = distance(x, y, z, poly[0].x, poly[0].y, poly[0].z);
 	for (i = 0; i < poly.size(); i++)
 	{
-		if (minD != min(minD, distance(x, y, poly[i].x, poly[i].y)))
+		if (minD != min(minD, distance(x, y, z, poly[i].x, poly[i].y, poly[i].z)))
 		{
-			minD = distance(x, y, poly[i].x, poly[i].y);
+			minD = distance(x, y, z, poly[i].x, poly[i].y, poly[i].z);
 			n = i;
 		}
 	}

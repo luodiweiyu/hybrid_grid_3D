@@ -35,10 +35,10 @@ int main()
 	polygonPoint(poly);
 	getType();
 	partition_Point();
-	ofstream fout("ap.dat");
+	ofstream fout("poly.dat");
 	fout << "variables = x, y, z" << endl;
-	for (int i = 0; i < ap.size(); i++)
-		fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << endl;
+	for (int i = 0; i < poly.size(); i++)
+		fout << poly[i].x << "  " << poly[i].y << "  " << poly[i].z << endl;
 	fout.close();
 	sortPoint();
 	fout.open("ms.dat");
@@ -54,7 +54,10 @@ int main()
 	fout.open("bound.dat");
 	fout << "variables = x, y, z" << endl;
 	for (int i = 0; i < bound.size(); i++)
-		fout << bound[i]->x << "  " << bound[i]->y << "  " << bound[i]->z << endl;
+	{
+		if (bound[i]->type == "Body")
+			fout << bound[i]->x << "  " << bound[i]->y << "  " << bound[i]->z << endl;
+	}
 	fout.close();
 	//polymesh();
 	//out_M("mesh/step = " + to_string(step));
@@ -62,35 +65,48 @@ int main()
 	coordinate_trans();
 	initFlow();
 	int i;
-	
+
 	while (t_sim < t_end)
 	{
 		record();
 		get_dt();
-		for (i = 0; i < ps.size(); i++)
-			update_p4_s(*ps[i]);
-		for (i = 0; i < pu.size(); i++)
+#pragma  omp parallel for
+		for (i = 0; i < ms.size(); i++)
+			update_p4_s(*ms[i]);
+#pragma  omp parallel for
+		for (i = 0; i < mu.size(); i++)
 		{
-			if (pu[i]->neighbor.size() == 3)
-				update_p3(*pu[i]);
-			else
-				update_p4_u(*pu[i]);
-			AP[pu[i]->connectId] = *pu[i];//replace
+			update_p4_u(*mu[i]);
+			ap[mu[i]->connectId] = *mu[i];
 		}
 		update_bound();
 		if (++step % 100 == 0)
 		{
-			if (abs(res - compute_res()) < 1e-20)
-				break;
-			else
-				res = compute_res();
+			//if (abs(res - compute_res()) < 1e-20)
+			//	break;
+			//else
+			res = compute_res();
 			cout << "step = " << step << "  t_sim = " << t_sim << "  dt = " << dt << "  res = " << res << endl;
 			//out_M("mesh/step = " + to_string(step));
+			fout.open("mesh/ap step = " + to_string(step) + ".dat");
+			fout << "variables = x, y, z,rho" << endl;
+			for (int i = 0; i < ap.size(); i++)
+			{
+				fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].u.x << endl;
+			}
+			fout.close();
+			fout.open("mesh/mu step = " + to_string(step) + ".dat");
+			fout << "variables = x, y, z,rho" << endl;
+			for (int i = 0; i < ap.size(); i++)
+			{
+				if (ap[i].section == -1 || ap[i].type == "Body")
+					fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].u.x << endl;
+			}
+			fout.close();
 		}
 		out_res();
 		t_sim = t_sim + dt;
 	}
 	//out_M("mesh/step = " + to_string(step));
-	system("PAUSE");
-	
+
 }
