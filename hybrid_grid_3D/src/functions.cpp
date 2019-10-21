@@ -24,27 +24,35 @@ void get_dt()
 			continue;
 		if (ap[i].neighbor.size() == 6)
 		{
-			Sxi = sqrt(ap[i].xix * ap[i].xix + ap[i].xiy * ap[i].xiy + ap[i].xiz * ap[i].xiz);
-			Seta = sqrt(ap[i].etax * ap[i].etax + ap[i].etay * ap[i].etay + ap[i].etaz * ap[i].etaz);
-			Szeta = sqrt(ap[i].zetax * ap[i].zetax + ap[i].zetay * ap[i].zetay + ap[i].zetaz * ap[i].zetaz);
-			c = sqrt(gama * ap[i].p / ap[i].rho);
-			uxi = ap[i].u.x * ap[i].xix + ap[i].u.y * ap[i].xiy + ap[i].u.z * ap[i].xiz;
-			ueta = ap[i].u.x * ap[i].etax + ap[i].u.y * ap[i].etay + ap[i].u.z * ap[i].etaz;
-			uzeta = ap[i].u.x * ap[i].zetax + ap[i].u.y * ap[i].zetay + ap[i].u.z * ap[i].zetaz;
+			if (ap[i].J == 0)
+			{
+				c = sqrt(gama * ap[i].p / ap[i].rho);
+				max1 = max(max(max(max1, ap[i].u.x + c), ap[i].u.x), ap[i].u.x - c);
+				max2 = max(max(max(max2, ap[i].u.y + c), ap[i].u.y), ap[i].u.y - c);
+				max3 = max(max(max(max3, ap[i].u.z + c), ap[i].u.z), ap[i].u.z - c);
+			}
+			else
+			{
+				Sxi = sqrt(ap[i].xix * ap[i].xix + ap[i].xiy * ap[i].xiy + ap[i].xiz * ap[i].xiz);
+				Seta = sqrt(ap[i].etax * ap[i].etax + ap[i].etay * ap[i].etay + ap[i].etaz * ap[i].etaz);
+				Szeta = sqrt(ap[i].zetax * ap[i].zetax + ap[i].zetay * ap[i].zetay + ap[i].zetaz * ap[i].zetaz);
+				c = sqrt(gama * ap[i].p / ap[i].rho);
+				uxi = ap[i].u.x * ap[i].xix + ap[i].u.y * ap[i].xiy + ap[i].u.z * ap[i].xiz;
+				ueta = ap[i].u.x * ap[i].etax + ap[i].u.y * ap[i].etay + ap[i].u.z * ap[i].etaz;
+				uzeta = ap[i].u.x * ap[i].zetax + ap[i].u.y * ap[i].zetay + ap[i].u.z * ap[i].zetaz;
 
-			maxxi = abs(uxi) + c * Sxi;
-			maxeta = abs(ueta) + c * Seta;
-			maxzeta = abs(uzeta) + c * Szeta;
-			max1 = max(max1, maxxi);
-			max2 = max(max2, maxeta);
-			max2 = max(max3, maxzeta);
+				maxxi = abs(uxi) + c * Sxi;
+				maxeta = abs(ueta) + c * Seta;
+				maxzeta = abs(uzeta) + c * Szeta;
+				max1 = max(max1, maxxi);
+				max2 = max(max2, maxeta);
+				max3 = max(max3, maxzeta);
+			}
 		}
 		else
 			std::cout << "id = " << i << "不是6个相邻节点！neighborSize = " << ap[i].neighbor.size() << std::endl;
 	}
-
 	t = cfl / (max1 + max2 + max3);
-	//t = CFL / (maxxi + maxeta);
 	dt = min(dt, t);
 	if (t_sim + dt > t_end)
 		dt = t_end - t_sim;
@@ -62,7 +70,7 @@ double compute_res()//计算残差
 		res = max(res, abs(ap[i].rho - apr[ap[i].id].rho) / apr[ap[i].id].rho);
 		n++;
 	}
-	return res / n;
+	return res;
 }
 void record()
 {
@@ -74,6 +82,7 @@ void record()
 		for (i = 0; i < ap.size(); i++)
 			apr.push_back(ap[i]);
 	else
+#pragma  omp parallel for
 		for (i = 0; i < ap.size(); i++)
 			apr[i] = ap[i];
 }
@@ -180,11 +189,11 @@ void update_p4_u(Mesh& p)
 	Hcr = VanLeer(apr[id], apr[id], "zeta", "R");
 	Hrl = VanLeer(apr[n[4]], apr[id], "zeta", "L");
 
-	U[0] = U[0] - dt * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcr.f1 - Glr.f1 + Grl.f1 - Gcl.f1 + Hcr.f1 - Hlr.f1 + Hrl.f1 - Hcl.f1);
-	U[1] = U[1] - dt * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcr.f2 - Glr.f2 + Grl.f2 - Gcl.f2 + Hcr.f2 - Hlr.f2 + Hrl.f2 - Hcl.f2);
-	U[2] = U[2] - dt * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcr.f3 - Glr.f3 + Grl.f3 - Gcl.f3 + Hcr.f3 - Hlr.f3 + Hrl.f3 - Hcl.f3);
-	U[3] = U[3] - dt * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcr.f4 - Glr.f4 + Grl.f4 - Gcl.f4 + Hcr.f4 - Hlr.f4 + Hrl.f4 - Hcl.f4);
-	U[4] = U[4] - dt * (Fcr.f5 - Flr.f5 + Frl.f5 - Fcl.f5 + Gcr.f5 - Glr.f5 + Grl.f5 - Gcl.f5 + Hcr.f5 - Hlr.f5 + Hrl.f5 - Hcl.f5);
+	U[0] = U[0] - dt * p.sec_num * (Fcr.f1 - Flr.f1 + Frl.f1 - Fcl.f1 + Gcr.f1 - Glr.f1 + Grl.f1 - Gcl.f1 + Hcr.f1 - Hlr.f1 + Hrl.f1 - Hcl.f1);
+	U[1] = U[1] - dt * p.sec_num * (Fcr.f2 - Flr.f2 + Frl.f2 - Fcl.f2 + Gcr.f2 - Glr.f2 + Grl.f2 - Gcl.f2 + Hcr.f2 - Hlr.f2 + Hrl.f2 - Hcl.f2);
+	U[2] = U[2] - dt * p.sec_num * (Fcr.f3 - Flr.f3 + Frl.f3 - Fcl.f3 + Gcr.f3 - Glr.f3 + Grl.f3 - Gcl.f3 + Hcr.f3 - Hlr.f3 + Hrl.f3 - Hcl.f3);
+	U[3] = U[3] - dt * p.sec_num * (Fcr.f4 - Flr.f4 + Frl.f4 - Fcl.f4 + Gcr.f4 - Glr.f4 + Grl.f4 - Gcl.f4 + Hcr.f4 - Hlr.f4 + Hrl.f4 - Hcl.f4);
+	U[4] = U[4] - dt * p.sec_num * (Fcr.f5 - Flr.f5 + Frl.f5 - Fcl.f5 + Gcr.f5 - Glr.f5 + Grl.f5 - Gcl.f5 + Hcr.f5 - Hlr.f5 + Hrl.f5 - Hcl.f5);
 	p.rho = U[0];
 	p.u.x = U[1] / U[0];
 	p.u.y = U[2] / U[0];
@@ -254,7 +263,7 @@ void update_bound()
 	extern double gama;
 	int i;
 	int id;
-#pragma  omp parallel for private(id)
+	#pragma  omp parallel for private(id)
 	for (i = 0; i < bound.size(); i++)
 	{
 		id = bound[i]->id;
@@ -262,7 +271,7 @@ void update_bound()
 		{
 			bound[i]->rho = 10;
 			bound[i]->p = 10;
-			bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
+			bound[i]->u.x = 15 /*13 * sqrt(gama * bound[i]->p / bound[i]->rho)*/;
 			bound[i]->u.y = 0;
 			bound[i]->u.z = 0;
 		}
@@ -315,6 +324,7 @@ void update_bound()
 			bound[i]->u.y = bound[i]->neighbor[0]->u.y;
 			bound[i]->u.z = bound[i]->neighbor[0]->u.z;
 			bound[i]->p = bound[i]->neighbor[0]->p;
+
 			//bound[i]->rho = 10;
 			//bound[i]->p = 10;
 			//bound[i]->u.x = 13 * sqrt(gama * bound[i]->p / bound[i]->rho);
@@ -327,6 +337,30 @@ void update_bound()
 			//bound[i]->u.y = 0;
 			//bound[i]->u.z = 0;
 
+			//double DELTA = 1e-10;
+			//Coordinate n, en;
+			//Coordinate u = bound[i]->u;
+			//n.x = bound[i]->neighbor[0]->x - bound[i]->x;
+			//n.y = bound[i]->neighbor[0]->y - bound[i]->y;
+			//n.z = bound[i]->neighbor[0]->z - bound[i]->z;
+			//en.x = n.x / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+			//en.y = n.y / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+			//en.z = n.z / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+			//if ((abs(u.x) < DELTA && abs(u.y) < DELTA) && abs(u.z) < DELTA/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
+			//{
+			//	bound[i]->rho = bound[i]->neighbor[0]->rho;
+			//	bound[i]->u = bound[i]->neighbor[0]->u;
+			//	bound[i]->p = bound[i]->neighbor[0]->p;
+			//}
+			//else
+			//{
+			//	double n_projection = (u.x * n.x + u.y * n.y + u.z * n.z) / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+			//	bound[i]->rho = bound[i]->neighbor[0]->rho;
+			//	bound[i]->u.x = u.x - en.x * n_projection;
+			//	bound[i]->u.y = u.y - en.y * n_projection;
+			//	bound[i]->u.z = u.z - en.z * n_projection;
+			//	bound[i]->p = bound[i]->neighbor[0]->p;
+			//}
 		}
 	}
 

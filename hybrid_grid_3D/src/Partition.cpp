@@ -61,13 +61,14 @@ void partition_Point()//Partition existing grid points
 						size = ap.size() - 1;
 						ap[size].id = size;
 						ap[size].connectId = i;
+						ap[size].section = -1, ap[size].sec_num = 1;
 						ap[i].connectId = size;
 						ap.push_back(tempu);
 						ap[ap.size() - 1] = poly[near_id];
 						ap[ap.size() - 1].id = ap.size() - 1;
 						ap[ap.size() - 1].type = "Body";
 						ap[ap.size() - 1].neighbor.push_back(&ap[size]);
-						ap[ap.size() - 1].section = -2;
+						ap[ap.size() - 1].section = -2, ap[ap.size() - 1].sec_num = 1;
 						if (sum == 5)
 						{
 							for (int j = 0; j < 6; j++)

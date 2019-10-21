@@ -97,7 +97,7 @@ Flux VanLeer(Mesh& N, Mesh& C, string direction, string side)
 	phiy = phiy / Dphi;
 	phiz = phiy / Dphi;
 	phit = phit / Dphi;
-	double M = abs(uc / c);
+	double M = uc / c;
 	Flux F;
 	if (side == "R")
 	{
@@ -114,7 +114,7 @@ Flux VanLeer(Mesh& N, Mesh& C, string direction, string side)
 			F.f4 = rho * uc * w + p * phiz;
 			F.f5 = uc * (E + p) - p * phit;
 		}
-		else if (M <= 1)
+		else if (abs(M) <= 1)
 		{
 			double FM = 0.25 * rho * c * (M + 1) * (M + 1);
 			F.f1 = FM;
@@ -139,7 +139,7 @@ Flux VanLeer(Mesh& N, Mesh& C, string direction, string side)
 			F.f4 = rho * uc * w + p * phiz;
 			F.f5 = uc * (E + p) - p * phit;
 		}
-		else if (M <= 1)
+		else if (abs(M) <= 1)
 		{
 			double FM = -0.25 * rho * c * (M - 1) * (M - 1);
 			F.f1 = FM;

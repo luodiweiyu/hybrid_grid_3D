@@ -16,7 +16,7 @@ void init_mesh()
 	extern string flowType;
 	extern double meshType;
 	extern int pnum;
-	extern double dx, dy,dz;
+	extern double dx, dy, dz;
 	extern double xl, yl, zl;
 	Mesh t;
 	vector<int> a;
@@ -110,15 +110,16 @@ void initFlow()
 void init_flow_cylinder()//Ô²ÖùÈÆÁ÷
 {
 	extern vector <Mesh> ap;
+	extern double gama;
 	double Ma1;
 	int i;
 	for (i = 0; i < ap.size(); i++)
 	{
 		ap[i].rho = 10;
-		ap[i].u.x = 0;
+		ap[i].p = 10;
+		ap[i].u.x = 0/*13 * sqrt(gama * ap[i].p / ap[i].rho)*/;
 		ap[i].u.y = 0;
 		ap[i].u.z = 0;
-		ap[i].p = 10;
 	}
 }
 
