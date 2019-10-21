@@ -75,61 +75,29 @@ int main()
 		get_dt();
 #pragma  omp parallel for
 		for (i = 0; i < ms.size(); i++)
-			update_p4_s(*ms[i]);
+			update_p4_u(*ms[i]);
 		for (i = 0; i < mu.size(); i++)
 		{
-			update_p4_s(*mu[i]);
-			//mu[i]->rho = ap[mu[i]->connectId - 1].rho;
-			//mu[i]->p = ap[mu[i]->connectId - 1].p;
-			//mu[i]->u.x = ap[mu[i]->connectId - 1].u.x;
-			//mu[i]->u.y = ap[mu[i]->connectId - 1].u.y;
-			//mu[i]->u.z = ap[mu[i]->connectId - 1].u.z;
-			//mu[i]->rho = 10;
-			//mu[i]->p = 10;
-			//mu[i]->u.x = 0;
-			//mu[i]->u.y = 0;
-			//mu[i]->u.z = 0;
-			//double DELTA = 1e-10;
-			//Coordinate n, en;
-			//Coordinate u = mu[i]->u;
-			//n.x = mu[i]->neighbor[0]->x - a;
-			//n.y = mu[i]->neighbor[0]->y - b;
-			//n.z = mu[i]->neighbor[0]->z -c;
-			//en.x = n.x / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//en.y = n.y / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//en.z = n.z / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//if ((abs(u.x) < DELTA && abs(u.y) < DELTA) && abs(u.z) < DELTA/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
-			//{
-			//	mu[i]->rho = mu[i]->neighbor[0]->rho;
-			//	mu[i]->u = mu[i]->neighbor[0]->u;
-			//	mu[i]->p = mu[i]->neighbor[0]->p;
-			//}
-			//else
-			//{
-			//	double n_projection = (u.x * n.x + u.y * n.y + u.z * n.z) / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//	mu[i]->rho = mu[i]->neighbor[0]->rho;
-			//	mu[i]->u.x = u.x - en.x * n_projection;
-			//	mu[i]->u.y = u.y - en.y * n_projection;
-			//	mu[i]->u.z = u.z - en.z * n_projection;
-			//	mu[i]->p = mu[i]->neighbor[0]->p;
-			//}
-
+			update_p4_u(*mu[i]);
 			ap[mu[i]->connectId] = *mu[i];
 		}
 		update_bound();
 		if (++step % 100 == 0)
 		{
-			//if (abs(res - compute_res()) < 1e-20)
-			//	break;
-			//else
+			if (abs(res - compute_res()) < 1e-20)
+				break;
+			else
 			res = compute_res();
 			cout << "step = " << step << "  t_sim = " << t_sim << "  dt = " << dt << "  res = " << res << endl;
 			fout.open("mesh/ap step = " + to_string(step) + ".dat");
-			fout << "variables = x, y, z,rho" << endl;
+			fout << "variables = x, y, z,rho,u,v,w,p" << endl;
 			for (int i = 0; i < ap.size(); i++)
 			{
-				if(ap[i].section==1||ap[i].section==0)
-				fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].rho<< endl;
+				//if(ap[i].section==1||ap[i].section==0)
+				if (ap[i].type == "Body")
+				//if (ap[i].section == -1)
+					fout << ap[i].x << "  " << ap[i].y << "  " << ap[i].z << "  " << ap[i].rho
+					<< "  " << ap[i].u.x << "  " << ap[i].u.y << "  " << ap[i].u.z << "  " << ap[i].p << endl;
 			}
 			fout.close();
 			//fout.open("mesh/ms step = " + to_string(step) + ".dat");

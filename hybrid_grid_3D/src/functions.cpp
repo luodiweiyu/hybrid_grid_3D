@@ -261,9 +261,10 @@ void update_bound()
 	extern vector<Mesh> ap;
 	extern int xnum, ynum, znum;
 	extern double gama;
+	extern double t_sim;
 	int i;
 	int id;
-	#pragma  omp parallel for private(id)
+	//#pragma  omp parallel for private(id)
 	for (i = 0; i < bound.size(); i++)
 	{
 		id = bound[i]->id;
@@ -274,6 +275,11 @@ void update_bound()
 			bound[i]->u.x = 15 /*13 * sqrt(gama * bound[i]->p / bound[i]->rho)*/;
 			bound[i]->u.y = 0;
 			bound[i]->u.z = 0;
+			//bound[i]->rho = ap[id + 1].rho;
+			//bound[i]->u.x = ap[id + 1].u.x;
+			//bound[i]->u.y = ap[id + 1].u.y;
+			//bound[i]->u.z = ap[id + 1].u.z;
+			//bound[i]->p = ap[id + 1].p;
 		}
 		else if (bound[i]->type == "X+")
 		{
@@ -290,7 +296,11 @@ void update_bound()
 			bound[i]->u.y = ap[id + xnum].u.y;
 			bound[i]->u.z = ap[id + xnum].u.z;
 			bound[i]->p = ap[id + xnum].p;
-
+			//bound[i]->rho = 10;
+			//bound[i]->p = 10;
+			//bound[i]->u.x = 0 /*13 * sqrt(gama * bound[i]->p / bound[i]->rho)*/;
+			//bound[i]->u.y = 13;
+			//bound[i]->u.z = 0;
 		}
 		else if (bound[i]->type == "Y+")
 		{
@@ -319,11 +329,11 @@ void update_bound()
 		}
 		else if (bound[i]->type == "Body")
 		{
-			bound[i]->rho = bound[i]->neighbor[0]->rho;
-			bound[i]->u.x = bound[i]->neighbor[0]->u.x;
-			bound[i]->u.y = bound[i]->neighbor[0]->u.y;
-			bound[i]->u.z = bound[i]->neighbor[0]->u.z;
-			bound[i]->p = bound[i]->neighbor[0]->p;
+			//bound[i]->rho = bound[i]->neighbor[0]->rho;
+			//bound[i]->u.x = bound[i]->neighbor[0]->u.x;
+			//bound[i]->u.y = bound[i]->neighbor[0]->u.y;
+			//bound[i]->u.z = bound[i]->neighbor[0]->u.z;
+			//bound[i]->p = bound[i]->neighbor[0]->p;
 
 			//bound[i]->rho = 10;
 			//bound[i]->p = 10;
@@ -337,30 +347,37 @@ void update_bound()
 			//bound[i]->u.y = 0;
 			//bound[i]->u.z = 0;
 
-			//double DELTA = 1e-10;
-			//Coordinate n, en;
-			//Coordinate u = bound[i]->u;
+			double DELTA = 1e-30;
+			Coordinate n, en;
+			Coordinate u;;
+			u.x = bound[i]->neighbor[0]->u.x;
+			u.y = bound[i]->neighbor[0]->u.y;
+			u.z = bound[i]->neighbor[0]->u.z;
+			n.x = bound[i]->x - a;
+			n.y = bound[i]->y - b;
+			n.z = bound[i]->z - c;
+			double length = sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
 			//n.x = bound[i]->neighbor[0]->x - bound[i]->x;
 			//n.y = bound[i]->neighbor[0]->y - bound[i]->y;
 			//n.z = bound[i]->neighbor[0]->z - bound[i]->z;
-			//en.x = n.x / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//en.y = n.y / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//en.z = n.z / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//if ((abs(u.x) < DELTA && abs(u.y) < DELTA) && abs(u.z) < DELTA/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
-			//{
-			//	bound[i]->rho = bound[i]->neighbor[0]->rho;
-			//	bound[i]->u = bound[i]->neighbor[0]->u;
-			//	bound[i]->p = bound[i]->neighbor[0]->p;
-			//}
-			//else
-			//{
-			//	double n_projection = (u.x * n.x + u.y * n.y + u.z * n.z) / sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
-			//	bound[i]->rho = bound[i]->neighbor[0]->rho;
-			//	bound[i]->u.x = u.x - en.x * n_projection;
-			//	bound[i]->u.y = u.y - en.y * n_projection;
-			//	bound[i]->u.z = u.z - en.z * n_projection;
-			//	bound[i]->p = bound[i]->neighbor[0]->p;
-			//}
+			en.x = n.x / length;
+			en.y = n.y / length;
+			en.z = n.z / length;
+			if ((abs(u.x) < DELTA && abs(u.y) < DELTA) && abs(u.z) < DELTA/* || (abs(tx) < DELTA || abs(ty) < DELTA)*/)
+			{
+				bound[i]->rho = bound[i]->neighbor[0]->rho;
+				bound[i]->u = bound[i]->neighbor[0]->u;
+				bound[i]->p = bound[i]->neighbor[0]->p;
+			}
+			else
+			{
+				double n_projection = (u.x * n.x + u.y * n.y + u.z * n.z) / length;
+				bound[i]->rho = bound[i]->neighbor[0]->rho;
+				bound[i]->u.x = u.x - en.x * n_projection;
+				bound[i]->u.y = u.y - en.y * n_projection;
+				bound[i]->u.z = u.z - en.z * n_projection;
+				bound[i]->p = bound[i]->neighbor[0]->p;
+			}
 		}
 	}
 
